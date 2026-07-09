@@ -3,7 +3,7 @@ import Tag from "../ui/Tag";
 function FailureReasonTags({ onToggle, options, selected }) {
   return (
     <fieldset className="choice-group">
-      <legend>미완료 원인 태그</legend>
+      <legend>막힌 이유</legend>
       <div className="tag-picker">
         {options.map((option) => {
           const isSelected = selected.includes(option);

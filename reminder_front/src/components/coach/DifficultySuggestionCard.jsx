@@ -7,7 +7,7 @@ function DifficultySuggestionCard() {
     <Card className="suggestion-card">
       <div className="suggestion-card__header">
         <Tag tone="recovery">{difficultySuggestion.recommendedLevel}</Tag>
-        <span>AI 재설계 후보</span>
+        <span>추천</span>
       </div>
       <h3>{difficultySuggestion.title}</h3>
       <p>{difficultySuggestion.message}</p>

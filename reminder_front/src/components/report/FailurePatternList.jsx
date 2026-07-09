@@ -6,8 +6,8 @@ function FailurePatternList({ patterns }) {
   return (
     <section className="failure-patterns">
       <SectionTitle
-        description="자책용 통계가 아니라 다음 주 난이도를 낮추기 위한 조건 분석입니다."
-        title="반복 실패 조건"
+        description="줄일 포인트"
+        title="패턴"
       />
       <div className="pattern-list">
         {patterns.map((pattern) => (

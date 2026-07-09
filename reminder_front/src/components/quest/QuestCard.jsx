@@ -6,7 +6,10 @@ import QuestTypeBadge from "./QuestTypeBadge";
 
 function QuestCard({ onOpen, onToggle, quest }) {
   return (
-    <Card className={`quest-card ${quest.completed ? "is-complete" : ""}`}>
+    <Card className={`quest-card quest-card--${quest.color} ${quest.completed ? "is-complete" : ""}`}>
+      <div className="quest-card__visual" aria-hidden="true">
+        {quest.visual}
+      </div>
       <div className="quest-card__topline">
         <QuestTypeBadge type={quest.type} />
         <span>{quest.time}</span>

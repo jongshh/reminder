@@ -1,7 +1,7 @@
 function EnergyCheck({ onChange, value, options }) {
   return (
     <fieldset className="choice-group">
-      <legend>오늘 에너지</legend>
+      <legend>에너지</legend>
       <div className="choice-grid">
         {options.map((option) => (
           <button

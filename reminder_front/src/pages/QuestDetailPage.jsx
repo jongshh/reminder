@@ -13,13 +13,16 @@ function QuestDetailPage({ onToggleQuest, quest }) {
   return (
     <div className="page">
       <SectionTitle
-        description="빈도, 수행 시간대, 미니 행동, 실패 시 복구 행동을 한 화면에서 확인하는 기본 틀입니다."
+        description="실행 · 복구"
         eyebrow="Quest Detail"
-        title="퀘스트 상세"
+        title="상세"
       />
 
       <div className="detail-layout">
         <Card className="quest-detail-card">
+          <div className={`quest-detail-card__visual quest-card--${quest.color}`} aria-hidden="true">
+            {quest.visual}
+          </div>
           <div className="quest-card__topline">
             <QuestTypeBadge type={quest.type} />
             <span>{quest.time}</span>
@@ -32,7 +35,7 @@ function QuestDetailPage({ onToggleQuest, quest }) {
             <Tag tone="success">+{quest.xp} XP</Tag>
           </div>
           <div className="detail-section">
-            <h3>실행 단계</h3>
+            <h3>순서</h3>
             <ol>
               {quest.steps.map((step) => (
                 <li key={step}>{step}</li>
@@ -40,11 +43,11 @@ function QuestDetailPage({ onToggleQuest, quest }) {
             </ol>
           </div>
           <div className="detail-section">
-            <h3>실패 시 복구 행동</h3>
+            <h3>복구</h3>
             <p>{quest.recoveryAction}</p>
           </div>
           <Button onClick={() => onToggleQuest(quest.id)} variant={quest.completed ? "secondary" : "primary"}>
-            {quest.completed ? "완료 취소" : "퀘스트 완료"}
+            {quest.completed ? "취소" : "완료"}
           </Button>
         </Card>
 

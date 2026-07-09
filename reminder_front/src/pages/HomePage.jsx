@@ -18,15 +18,23 @@ function HomePage({ onOpenQuest, onToggleQuest, quests }) {
         <SectionTitle
           description={todayStatus.completionTarget}
           eyebrow="Today"
-          title="이것만 끝내면 오늘은 성공"
+          title="오늘"
         />
-        <div className="today-panel">
-          <div>
-            <Tag tone="success">컨디션 {todayStatus.condition}</Tag>
-            <h3>{todayStatus.primaryFocus}</h3>
-            <p>체크인 {todayStatus.checkinProgress}/{todayStatus.checkinTotal} 완료</p>
+        <div className="today-panel visual-panel">
+          <div className="score-ring" style={{ "--value": `${stats.completionRate}%` }}>
+            <strong>{stats.completionRate}</strong>
+            <span>%</span>
           </div>
-          <ProgressBar label="오늘 진행률" value={stats.completionRate} />
+          <div className="today-panel__focus">
+            <Tag tone="success">{todayStatus.condition}</Tag>
+            <h3>{todayStatus.primaryFocus}</h3>
+            <div className="mini-metrics">
+              <span>{stats.completed}/{stats.total}</span>
+              <span>체크 {todayStatus.checkinProgress}/{todayStatus.checkinTotal}</span>
+              <span>{stats.remaining} 남음</span>
+            </div>
+          </div>
+          <ProgressBar label="진행" value={stats.completionRate} />
         </div>
       </section>
 

@@ -6,7 +6,7 @@ function CompletionRateCard({ report }) {
     <Card className="completion-card">
       <div className="completion-card__header">
         <div>
-          <span>주간 달성률</span>
+          <span>달성률</span>
           <strong>{report.completionRate}%</strong>
         </div>
         <div>
@@ -16,7 +16,7 @@ function CompletionRateCard({ report }) {
           </strong>
         </div>
       </div>
-      <ProgressBar label="전체 퀘스트" value={report.completionRate} />
+      <ProgressBar label="전체" value={report.completionRate} />
       <div className="day-bars" aria-label="요일별 달성률">
         {report.days.map((day) => (
           <div className="day-bars__item" key={day.day}>

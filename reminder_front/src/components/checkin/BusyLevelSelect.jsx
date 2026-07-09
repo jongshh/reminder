@@ -1,7 +1,7 @@
 function BusyLevelSelect({ onChange, value, options }) {
   return (
     <fieldset className="choice-group">
-      <legend>예상 바쁨 정도</legend>
+      <legend>바쁨</legend>
       <div className="choice-grid">
         {options.map((option) => (
           <button

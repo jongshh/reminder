@@ -10,7 +10,7 @@ function CoachMessageCard() {
         <span>{coachMessage.adjustment}</span>
       </div>
       <h3>{coachMessage.title}</h3>
-      <p>{coachMessage.message}</p>
+      <strong>{coachMessage.message}</strong>
     </Card>
   );
 }

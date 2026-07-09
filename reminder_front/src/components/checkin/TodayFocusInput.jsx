@@ -1,10 +1,10 @@
 function TodayFocusInput({ onChange, value }) {
   return (
     <label className="form-field">
-      <span>오늘 가장 중요한 1가지</span>
+      <span>오늘 1개</span>
       <input
         onChange={(event) => onChange(event.target.value)}
-        placeholder="예: LC 20분만 먼저 끝내기"
+        placeholder="LC 20분"
         type="text"
         value={value}
       />

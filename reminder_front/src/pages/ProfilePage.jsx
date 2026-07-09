@@ -11,14 +11,14 @@ function ProfilePage() {
   return (
     <div className="page">
       <SectionTitle
-        description="클래스, 누적 XP, 스트릭, 배지를 모아 가벼운 성장 동기를 보여주는 화면입니다."
+        description="레벨 · 스트릭 · 배지"
         eyebrow="Profile / Growth"
-        title="프로필과 성장"
+        title="성장"
       />
 
       <Card className="profile-card" tone="accent">
         <Tag tone="main">{userProfile.classLabel}</Tag>
-        <h2>{userProfile.name}님의 루틴 클래스</h2>
+        <h2>{userProfile.name}</h2>
         <p>{userProfile.targetGoal}</p>
       </Card>
 

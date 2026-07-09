@@ -55,7 +55,7 @@ function CheckinForm() {
               onChange={(event) => setCompletedToday(event.target.checked)}
               type="checkbox"
             />
-            <span>오늘 핵심 퀘스트를 완료했어요</span>
+            <span>핵심 완료</span>
           </label>
           {!completedToday ? (
             <FailureReasonTags
@@ -69,13 +69,13 @@ function CheckinForm() {
 
       <div className="checkin-form__footer">
         <div>
-          <Tag tone="main">{mode === "am" ? "계획 데이터" : "회고 데이터"}</Tag>
-          <span>AI 재설계의 입력값으로 저장됩니다.</span>
+          <Tag tone="main">{mode === "am" ? "계획" : "회고"}</Tag>
+          <span>AI 조정값</span>
         </div>
-        <Button type="submit">체크인 저장</Button>
+        <Button type="submit">저장</Button>
       </div>
 
-      {submitted ? <p className="form-feedback">체크인 샘플이 저장됐습니다.</p> : null}
+      {submitted ? <p className="form-feedback">저장 완료</p> : null}
     </Card>
   );
 }

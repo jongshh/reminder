@@ -19,7 +19,7 @@ function ProfilePage({ onNavigate }) {
         <Tag tone="main">{profile.classLabel}</Tag>
         <h2>{profile.name}</h2>
         <p>{profile.targetGoal}</p>
-        {!capabilities.cloudSync ? <small>비회원 데이터는 이 기기 안에서만 유지됩니다.</small> : null}
+        {!capabilities.cloudSync ? <small>게스트 데이터는 이 기기 안에서만 유지됩니다.</small> : null}
         <div className="profile-card__actions">
           <Button onClick={() => onNavigate("settings")} size="sm" variant="ghost">
             설정

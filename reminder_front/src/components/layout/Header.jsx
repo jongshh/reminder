@@ -1,3 +1,4 @@
+import { brand } from "../../config/brand";
 import { useAppData } from "../../data/AppDataProvider";
 import Tag from "../ui/Tag";
 
@@ -7,7 +8,9 @@ function Header({ currentLabel, onNavigate }) {
   return (
     <header className="app-header">
       <div className="app-header__title">
-        <p className="app-header__eyebrow">{todayStatus.dateLabel}</p>
+        <p className="app-header__eyebrow">
+          {brand.appName} · {todayStatus.dateLabel}
+        </p>
         <h1>{currentLabel}</h1>
       </div>
       <button

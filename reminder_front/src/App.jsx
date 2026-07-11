@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ProfilePage from "./pages/ProfilePage";
 import QuestDetailPage from "./pages/QuestDetailPage";
+import QuestPage from "./pages/QuestPage";
 import SettingsPage from "./pages/SettingsPage";
 import SignupPage from "./pages/SignupPage";
 import WeeklyReportPage from "./pages/WeeklyReportPage";
@@ -17,7 +18,7 @@ import { getQuestById } from "./utils/questUtils";
 
 function AuthenticatedApp() {
   const { navItems, quests, setQuests } = useAppData();
-  const [activePage, setActivePage] = useState("onboarding");
+  const [activePage, setActivePage] = useState("home");
   const [selectedQuestId, setSelectedQuestId] = useState(quests[0]?.id);
 
   const currentLabel = navItems.find((item) => item.id === activePage)?.label ?? "Questlog";
@@ -43,6 +44,8 @@ function AuthenticatedApp() {
         return <OnboardingPage onNavigate={setActivePage} />;
       case "checkin":
         return <CheckinPage />;
+      case "quests":
+        return <QuestPage onOpenQuest={handleOpenQuest} onToggleQuest={handleToggleQuest} quests={quests} />;
       case "quest":
         return <QuestDetailPage onToggleQuest={handleToggleQuest} quest={selectedQuest} />;
       case "report":
@@ -53,7 +56,7 @@ function AuthenticatedApp() {
         return <SettingsPage onNavigate={setActivePage} />;
       case "home":
       default:
-        return <HomePage onOpenQuest={handleOpenQuest} onToggleQuest={handleToggleQuest} quests={quests} />;
+        return <HomePage />;
     }
   };
 

@@ -1,10 +1,12 @@
 export const navItems = [
-  { id: "onboarding", label: "시작", shortLabel: "시작", icon: "◎" },
-  { id: "home", label: "오늘", shortLabel: "오늘", icon: "✓" },
-  { id: "checkin", label: "체크", shortLabel: "체크", icon: "◐" },
-  { id: "quest", label: "상세", shortLabel: "상세", icon: "◇" },
-  { id: "report", label: "주간", shortLabel: "주간", icon: "▣" },
-  { id: "profile", label: "성장", shortLabel: "성장", icon: "☆" },
+  { id: "home", label: "나의 방", shortLabel: "방", icon: "⌂" },
+  { id: "quests", label: "오늘 퀘스트", shortLabel: "퀘스트", icon: "✓" },
+  { id: "checkin", label: "체크인", shortLabel: "체크", icon: "◐" },
+  { id: "quest", label: "퀘스트 상세", shortLabel: "상세", icon: "◇" },
+  { id: "report", label: "주간 리포트", shortLabel: "주간", icon: "▣" },
+  { id: "profile", label: "성장 기록", shortLabel: "성장", icon: "☆" },
+  { id: "settings", label: "계정 설정", shortLabel: "설정", icon: "⚙" },
+  { id: "onboarding", label: "시작 설정", shortLabel: "시작", icon: "◎" },
 ];
 
 export const onboardingSteps = [
@@ -31,6 +33,24 @@ export const userProfile = {
     { id: "recovery", label: "복구", tone: "recovery" },
   ],
 };
+
+export const spaceProfile = {
+  appName: "나의 루틴 방",
+  ownerName: "지우",
+  ddayLabel: "루틴 128일째",
+  currency: 320,
+  notificationTime: "21:30",
+  todayQuestion: "오늘 가장 중요한 루틴은?",
+  answerState: "available",
+  roomMood: "calm",
+};
+
+export const roomItems = [
+  { id: "window", label: "창문", slot: "wall", owned: true, equipped: true },
+  { id: "plant", label: "식물", slot: "floor", owned: true, equipped: true },
+  { id: "lamp", label: "조명", slot: "side", owned: true, equipped: true },
+  { id: "mug", label: "머그잔", slot: "table", owned: true, equipped: true },
+];
 
 export const todayStatus = {
   dateLabel: "7월 1주",

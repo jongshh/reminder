@@ -41,12 +41,14 @@ function RoomCanvas() {
           <path className="room-mug-handle" d="M298 146 C314 146 314 162 298 162" />
         </svg>
 
-        <div className={`mascot mascot--${spaceProfile.roomMood}`} aria-label={`${brand.mascotName} 캐릭터`}>
-          <span className="mascot__eye mascot__eye--left" />
-          <span className="mascot__eye mascot__eye--right" />
-          <span className="mascot__mouth" />
-          <span className="mascot__arm mascot__arm--left" />
-          <span className="mascot__arm mascot__arm--right" />
+        <div className={`mascot mascot--photo mascot--${spaceProfile.roomMood}`} aria-label={`${brand.mascotName} 캐릭터`}>
+          <img className="mascot__photo mascot__photo--1" src="/mascot/mascot-happy.png" alt="" />
+          <img className="mascot__photo mascot__photo--2" src="/mascot/mascot-thumbs.png" alt="" />
+          <img className="mascot__photo mascot__photo--3" src="/mascot/mascot-shy.png" alt="" />
+          <img className="mascot__photo mascot__photo--4" src="/mascot/mascot-pray.png" alt="" />
+          <img className="mascot__photo mascot__photo--5" src="/mascot/mascot-sleepy.png" alt="" />
+          <img className="mascot__photo mascot__photo--6" src="/mascot/mascot-sad.png" alt="" />
+          <img className="mascot__photo mascot__photo--7" src="/mascot/mascot-angry.png" alt="" />
         </div>
       </div>
 

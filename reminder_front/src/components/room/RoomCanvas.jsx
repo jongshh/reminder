@@ -11,57 +11,39 @@ const mascotFrames = [
   "mascot-sleepy",
   "mascot-sad",
   "mascot-angry",
+  "mascot-run",
 ];
 
 function RoomCanvas() {
   const equippedCount = roomItems.filter((item) => item.equipped).length;
 
   return (
-    <section className="room-card room-card--simple main-room-card" aria-label="나의 루틴 공간">
+    <section className="room-card room-card--photo main-room-card" aria-label="나의 루틴 방">
       <div className="room-card__top">
         <div>
-          <Tag tone="main">루틴 공간</Tag>
-          <h2>나의 루틴 공간</h2>
+          <Tag tone="main">루틴 방</Tag>
+          <h2>나의 루틴 방</h2>
           <p>{spaceProfile.ddayLabel}</p>
         </div>
         <div className="room-card__actions">
           <button aria-label="캐릭터 간식 주기" type="button">
             ◌
           </button>
-          <button aria-label="공간 꾸미기" type="button">
+          <button aria-label="방 꾸미기" type="button">
             +
           </button>
         </div>
       </div>
 
-      <div className="room-scene room-scene--simple">
-        <div className="simple-room" aria-hidden="true">
-          <span className="simple-wall" />
-          <span className="simple-floor" />
+      <div className="room-scene room-scene--photo">
+        <img
+          alt=""
+          aria-hidden="true"
+          className="photo-room__reference"
+          src="/room-reference/beige-room-reference.png"
+        />
 
-          <div className="simple-window">
-            <span />
-            <span />
-          </div>
-
-          <div className="simple-shelf">
-            <span className="simple-book simple-book--one" />
-            <span className="simple-book simple-book--two" />
-            <span className="simple-lamp" />
-          </div>
-
-          <div className="simple-plant">
-            <span className="simple-leaf simple-leaf--one" />
-            <span className="simple-leaf simple-leaf--two" />
-            <span className="simple-pot" />
-          </div>
-
-          <div className="simple-mat">
-            <span />
-          </div>
-        </div>
-
-        <div className={`mascot mascot--photo mascot--simple mascot--${spaceProfile.roomMood}`} aria-label={`${brand.mascotName} 캐릭터`}>
+        <div className={`mascot mascot--photo mascot--reference mascot--${spaceProfile.roomMood}`} aria-label={`${brand.mascotName} 캐릭터`}>
           {mascotFrames.map((frame, index) => (
             <img
               alt=""
@@ -84,7 +66,7 @@ function RoomCanvas() {
           <small>{brand.currencyName}</small>
         </div>
         <Button size="sm" variant="secondary">
-          공간 꾸미기
+          방 꾸미기
         </Button>
       </div>
     </section>

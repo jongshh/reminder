@@ -2121,6 +2121,10 @@ body::before {
   animation-delay: 12s;
 }
 
+.mascot__photo--8 {
+  animation-delay: 14s;
+}
+
 @keyframes mascot-photo-cycle {
   0%,
   12% {
@@ -4658,5 +4662,106 @@ body::before {
 
   .home-status-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Photo-based room from the provided reference image */
+.room-card--photo {
+  min-height: calc(100vh - 180px);
+  border-color: rgba(226, 207, 180, 0.8);
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255, 255, 255, 0.9), transparent 190px),
+    linear-gradient(155deg, rgba(255, 253, 248, 0.98), rgba(250, 242, 230, 0.78));
+}
+
+.room-card--photo .room-card__top,
+.room-card--photo .room-card__bottom {
+  flex-wrap: wrap;
+}
+
+.room-scene--photo {
+  min-height: clamp(440px, 62vh, 680px);
+  overflow: hidden;
+  border: 1px solid rgba(226, 207, 180, 0.72);
+  border-radius: 34px;
+  background: #fffaf3;
+  box-shadow:
+    0 18px 42px rgba(104, 82, 54, 0.04) inset,
+    0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.photo-room__reference {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: auto;
+  max-width: 96%;
+  height: min(94%, 620px);
+  border-radius: 24px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 18px 24px rgba(104, 82, 54, 0.05))
+    saturate(0.96);
+  transform: translate(-50%, -50%);
+}
+
+.mascot--reference {
+  z-index: 4;
+  bottom: clamp(42px, 7.2vh, 74px);
+  width: clamp(188px, 23vw, 278px);
+  height: clamp(188px, 23vw, 278px);
+}
+
+.mascot--reference .mascot__photo {
+  animation-name: mascot-reference-photo-cycle;
+  animation-duration: 16s;
+  filter:
+    drop-shadow(0 16px 18px rgba(104, 82, 54, 0.12))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.6));
+}
+
+.mascot--reference::after {
+  right: 22%;
+  bottom: 8%;
+  left: 22%;
+  background: rgba(104, 82, 54, 0.1);
+}
+
+.room-card--photo .room-card__bottom {
+  border-top-color: rgba(226, 207, 180, 0.72);
+}
+
+@media (max-width: 820px) {
+  .room-card--photo {
+    min-height: auto;
+  }
+
+  .room-scene--photo {
+    min-height: 430px;
+  }
+
+  .photo-room__reference {
+    width: auto;
+    max-width: 112%;
+    height: 92%;
+  }
+
+  .mascot--reference {
+    bottom: 44px;
+    width: 214px;
+    height: 214px;
+  }
+}
+
+@keyframes mascot-reference-photo-cycle {
+  0%,
+  11.6% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  12.4%,
+  100% {
+    opacity: 0;
+    transform: scale(0.99) rotate(0.6deg);
   }
 }

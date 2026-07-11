@@ -6,7 +6,7 @@ function Header({ currentLabel, onNavigate }) {
   const { profile, todayStatus } = useAppData();
 
   return (
-    <header className="app-header">
+    <header className="app-header app-header--simple">
       <div className="app-header__title">
         <p className="app-header__eyebrow">
           {brand.appName} · {todayStatus.dateLabel}

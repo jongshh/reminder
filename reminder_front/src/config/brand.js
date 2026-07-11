@@ -1,5 +1,5 @@
 export const brand = {
-  appName: "나의 루틴 방",
+  appName: "루틴 포드",
   mascotName: "모모",
   currencyName: "별조각",
 };

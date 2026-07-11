@@ -16,13 +16,27 @@ import SignupPage from "./pages/SignupPage";
 import WeeklyReportPage from "./pages/WeeklyReportPage";
 import { getQuestById } from "./utils/questUtils";
 
+const navigationMeta = {
+  home: { icon: "◒", label: "스튜디오", shortLabel: "작업방" },
+  quests: { icon: "✓", label: "오늘 할 일", shortLabel: "할 일" },
+  checkin: { icon: "◐", label: "컨디션", shortLabel: "체크" },
+  quest: { icon: "◇", label: "루틴 상세", shortLabel: "상세" },
+  report: { icon: "▣", label: "주간 기록", shortLabel: "기록" },
+  profile: { icon: "☆", label: "성장 로그", shortLabel: "성장" },
+  settings: { icon: "⚙", label: "설정", shortLabel: "설정" },
+  onboarding: { icon: "◎", label: "시작 설정", shortLabel: "시작" },
+};
+
 function AuthenticatedApp() {
   const { navItems, quests, setQuests } = useAppData();
   const [activePage, setActivePage] = useState("home");
   const [selectedQuestId, setSelectedQuestId] = useState(quests[0]?.id);
 
-  const currentLabel = navItems.find((item) => item.id === activePage)?.label ?? "Questlog";
-  const pageLabel = activePage === "settings" ? "설정" : currentLabel;
+  const displayNavItems = useMemo(
+    () => navItems.map((item) => ({ ...item, ...navigationMeta[item.id] })),
+    [navItems],
+  );
+  const currentLabel = displayNavItems.find((item) => item.id === activePage)?.label ?? "Questlog";
   const selectedQuest = useMemo(() => getQuestById(quests, selectedQuestId), [quests, selectedQuestId]);
 
   const handleToggleQuest = (questId) => {
@@ -56,15 +70,22 @@ function AuthenticatedApp() {
         return <SettingsPage onNavigate={setActivePage} />;
       case "home":
       default:
-        return <HomePage />;
+        return (
+          <HomePage
+            onNavigate={setActivePage}
+            onOpenQuest={handleOpenQuest}
+            onToggleQuest={handleToggleQuest}
+            quests={quests}
+          />
+        );
     }
   };
 
   return (
     <AppLayout
       activePage={activePage}
-      currentLabel={pageLabel}
-      navItems={navItems}
+      currentLabel={currentLabel}
+      navItems={displayNavItems}
       onNavigate={setActivePage}
     >
       {renderPage()}

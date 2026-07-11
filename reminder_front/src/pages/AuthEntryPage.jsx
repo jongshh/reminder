@@ -8,7 +8,7 @@ function AuthEntryPage({ onGuest, onLogin, onSignup }) {
       <section className="auth-panel">
         <Tag tone="main">Questlog</Tag>
         <h1>오늘의 루틴을 사용자별로 시작하세요</h1>
-        <p>회원은 저장된 프로필과 기록을 불러오고, 비회원은 이 기기 안에서만 데이터를 유지합니다.</p>
+        <p>회원가입/로그인해서 저장된 프로필과 기록을 불러오거나, 게스트 모드로 시작할 수 있어요.</p>
 
         <div className="auth-actions">
           <Button onClick={onLogin}>로그인</Button>
@@ -16,7 +16,7 @@ function AuthEntryPage({ onGuest, onLogin, onSignup }) {
             회원가입
           </Button>
           <Button onClick={onGuest} variant="ghost">
-            비회원으로 접속
+            게스트 모드
           </Button>
         </div>
       </section>
@@ -24,13 +24,13 @@ function AuthEntryPage({ onGuest, onLogin, onSignup }) {
       <div className="auth-card-grid">
         <Card>
           <Tag tone="success">Member</Tag>
-          <h3>프로필 기반 데이터</h3>
-          <p>목표, 레벨, 퀘스트, 리포트를 사용자별 저장소에서 불러올 수 있도록 준비합니다.</p>
+          <h3>회원가입 시</h3>
+          <p>리더보드를 포함한 모든 기능을 이용할 수 있어요. 클라우드에서 저장된 프로필과 기록을 불러올 수 있어요.</p>
         </Card>
         <Card>
           <Tag tone="warning">Guest</Tag>
-          <h3>앱 내부 데이터</h3>
-          <p>비회원 데이터는 로컬에만 보관되며 리더보드와 클라우드 동기화는 꺼집니다.</p>
+          <h3>게스트 모드</h3>
+          <p>제한적인 기능만 사용할 수 있어요. 클라우드 동기화 없이, 이 기기 안에서만 데이터를 유지해요.</p>
         </Card>
       </div>
     </main>

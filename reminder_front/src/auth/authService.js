@@ -32,6 +32,14 @@ const writeJson = (key, value) => {
   }
 };
 
+const removeItem = (key) => {
+  const storage = getStorage();
+
+  if (storage) {
+    storage.removeItem(key);
+  }
+};
+
 const normalizeEmail = (email) => email.trim().toLowerCase();
 
 const createMemberId = (email) => `member:${normalizeEmail(email)}`;
@@ -95,11 +103,14 @@ export const authService = {
   },
 
   logout() {
-    const storage = getStorage();
+    removeItem(SESSION_KEY);
+  },
 
-    if (storage) {
-      storage.removeItem(SESSION_KEY);
-    }
+  deleteAccount(userId) {
+    const members = readJson(MEMBERS_KEY, {});
+    delete members[userId];
+    writeJson(MEMBERS_KEY, members);
+    removeItem(SESSION_KEY);
   },
 };
 

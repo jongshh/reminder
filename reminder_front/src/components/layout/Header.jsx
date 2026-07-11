@@ -1,7 +1,7 @@
 import { useAppData } from "../../data/AppDataProvider";
 import Tag from "../ui/Tag";
 
-function Header({ currentLabel }) {
+function Header({ currentLabel, onNavigate }) {
   const { profile, todayStatus } = useAppData();
 
   return (
@@ -10,10 +10,15 @@ function Header({ currentLabel }) {
         <p className="app-header__eyebrow">{todayStatus.dateLabel}</p>
         <h1>{currentLabel}</h1>
       </div>
-      <div className="app-header__profile">
+      <button
+        className="app-header__profile"
+        onClick={() => onNavigate("settings")}
+        title="설정"
+        type="button"
+      >
         <Tag tone="success">{profile.className}</Tag>
         <span>Lv.{profile.level}</span>
-      </div>
+      </button>
     </header>
   );
 }

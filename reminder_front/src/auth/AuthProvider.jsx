@@ -35,16 +35,26 @@ export function AuthProvider({ children }) {
     setSession(null);
   }, []);
 
+  const deleteAccount = useCallback(() => {
+    if (!session) {
+      return;
+    }
+
+    authService.deleteAccount(session.userId);
+    setSession(null);
+  }, [session]);
+
   const value = useMemo(
     () => ({
       continueAsGuest,
+      deleteAccount,
       isRestoring,
       login,
       logout,
       session,
       signup,
     }),
-    [continueAsGuest, isRestoring, login, logout, session, signup],
+    [continueAsGuest, deleteAccount, isRestoring, login, logout, session, signup],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -37,6 +37,14 @@ const writeJson = (key, value) => {
   }
 };
 
+const removeItem = (key) => {
+  const storage = getStorage();
+
+  if (storage) {
+    storage.removeItem(key);
+  }
+};
+
 const createInitialData = (profileSeed) => {
   const data = clone(defaultAppData);
 
@@ -69,5 +77,13 @@ export const profileRepository = {
 
   saveMemberData(userId, data) {
     writeJson(memberDataKey(userId), data);
+  },
+
+  deleteGuestData() {
+    removeItem(GUEST_DATA_KEY);
+  },
+
+  deleteMemberData(userId) {
+    removeItem(memberDataKey(userId));
   },
 };

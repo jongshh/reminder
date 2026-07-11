@@ -16,8 +16,8 @@ function LoginPage({ onBack, onSubmit }) {
     <main className="auth-shell">
       <Card as="form" className="auth-form" onSubmit={handleSubmit} tone="accent">
         <Tag tone="main">Login</Tag>
-        <h1>저장된 프로필 불러오기</h1>
-        <p>현재는 localStorage 기반 mock 인증이며, 이후 DB 인증으로 교체할 수 있는 구조입니다.</p>
+        <h1>로그인</h1>
+        <p>돌아오신 것을 환영해요</p>
 
         <label className="form-field">
           <span>이메일</span>

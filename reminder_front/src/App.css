@@ -111,7 +111,15 @@ small {
   flex-shrink: 0;
   align-items: center;
   gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: transparent;
   white-space: nowrap;
+}
+
+.app-header__profile:hover {
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .app-header__profile > span {
@@ -288,6 +296,12 @@ small {
   color: #30382f;
 }
 
+.button--danger {
+  border-color: #e7b4a8;
+  background: #fff1ee;
+  color: #9d3e29;
+}
+
 .card {
   display: grid;
   gap: 10px;
@@ -430,7 +444,9 @@ small {
 .quest-list,
 .onboarding-flow,
 .badge-section,
-.failure-patterns {
+.failure-patterns,
+.settings-grid,
+.settings-card {
   display: grid;
   gap: 16px;
 }
@@ -601,8 +617,47 @@ small {
 .weekly-summary,
 .completion-card,
 .next-week-card,
-.profile-card {
+.profile-card,
+.settings-card {
   align-content: start;
+}
+
+.profile-card__actions,
+.settings-actions,
+.settings-card__header,
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-card__actions,
+.settings-actions {
+  flex-wrap: wrap;
+}
+
+.settings-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-card__header,
+.settings-row {
+  justify-content: space-between;
+}
+
+.settings-card__header strong {
+  color: #18201b;
+  font-size: 1.3rem;
+}
+
+.settings-confirm {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e7b4a8;
+  border-radius: 8px;
+  background: #fff8f6;
 }
 
 .stat-card strong {
@@ -848,6 +903,7 @@ small {
 
   .today-panel,
   .auth-card-grid,
+  .settings-grid,
   .insight-grid,
   .quest-list__items,
   .report-grid,

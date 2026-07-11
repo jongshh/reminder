@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ProfilePage from "./pages/ProfilePage";
 import QuestDetailPage from "./pages/QuestDetailPage";
+import SettingsPage from "./pages/SettingsPage";
 import SignupPage from "./pages/SignupPage";
 import WeeklyReportPage from "./pages/WeeklyReportPage";
 import { getQuestById } from "./utils/questUtils";
@@ -20,6 +21,7 @@ function AuthenticatedApp() {
   const [selectedQuestId, setSelectedQuestId] = useState(quests[0]?.id);
 
   const currentLabel = navItems.find((item) => item.id === activePage)?.label ?? "Questlog";
+  const pageLabel = activePage === "settings" ? "설정" : currentLabel;
   const selectedQuest = useMemo(() => getQuestById(quests, selectedQuestId), [quests, selectedQuestId]);
 
   const handleToggleQuest = (questId) => {
@@ -46,7 +48,9 @@ function AuthenticatedApp() {
       case "report":
         return <WeeklyReportPage />;
       case "profile":
-        return <ProfilePage />;
+        return <ProfilePage onNavigate={setActivePage} />;
+      case "settings":
+        return <SettingsPage onNavigate={setActivePage} />;
       case "home":
       default:
         return <HomePage onOpenQuest={handleOpenQuest} onToggleQuest={handleToggleQuest} quests={quests} />;
@@ -56,7 +60,7 @@ function AuthenticatedApp() {
   return (
     <AppLayout
       activePage={activePage}
-      currentLabel={currentLabel}
+      currentLabel={pageLabel}
       navItems={navItems}
       onNavigate={setActivePage}
     >

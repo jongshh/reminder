@@ -65,11 +65,17 @@ export function AppDataProvider({ children }) {
     }));
   };
 
+  const resetGuestData = () => {
+    profileRepository.deleteGuestData();
+    setAppData(loadDataForSession(session));
+  };
+
   const value = useMemo(
     () => ({
       ...appData,
       capabilities: getCapabilities(session),
       isDataReady,
+      resetGuestData,
       setQuests,
       updateProfile,
     }),

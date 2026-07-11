@@ -18,8 +18,8 @@ function SignupPage({ onBack, onSubmit }) {
     <main className="auth-shell">
       <Card as="form" className="auth-form" onSubmit={handleSubmit} tone="accent">
         <Tag tone="success">Signup</Tag>
-        <h1>새 프로필 만들기</h1>
-        <p>입력한 이름과 목표는 프로필 기본값으로 저장되어 앱 전역 데이터에 반영됩니다.</p>
+        <h1>새 계정 만들기</h1>
+        <p>나의 목표를 적어보아요!</p>
 
         <label className="form-field">
           <span>이름</span>

@@ -6,10 +6,11 @@ import QuestBoard from "../components/quest/QuestBoard";
 import ProgressBar from "../components/ui/ProgressBar";
 import SectionTitle from "../components/ui/SectionTitle";
 import Tag from "../components/ui/Tag";
-import { todayStatus, userProfile } from "../data/mockData";
+import { useAppData } from "../data/AppDataProvider";
 import { getQuestStats } from "../utils/questUtils";
 
 function HomePage({ onOpenQuest, onToggleQuest, quests }) {
+  const { profile, todayStatus } = useAppData();
   const stats = getQuestStats(quests);
 
   return (
@@ -40,9 +41,9 @@ function HomePage({ onOpenQuest, onToggleQuest, quests }) {
 
       <section className="insight-grid">
         <CoachMessageCard />
-        <LevelCard profile={userProfile} />
-        <StreakBadge streak={userProfile.streak} />
-        <RecoveryTokenCard count={userProfile.recoveryTokens} recoveryRate={userProfile.recoveryRate} />
+        <LevelCard profile={profile} />
+        <StreakBadge streak={profile.streak} />
+        <RecoveryTokenCard count={profile.recoveryTokens} recoveryRate={profile.recoveryRate} />
       </section>
 
       <QuestBoard onOpenQuest={onOpenQuest} onToggleQuest={onToggleQuest} quests={quests} />

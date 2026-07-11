@@ -1,8 +1,10 @@
-import { difficultySuggestion } from "../../data/mockData";
+import { useAppData } from "../../data/AppDataProvider";
 import Card from "../ui/Card";
 import Tag from "../ui/Tag";
 
 function DifficultySuggestionCard() {
+  const { difficultySuggestion } = useAppData();
+
   return (
     <Card className="suggestion-card">
       <div className="suggestion-card__header">

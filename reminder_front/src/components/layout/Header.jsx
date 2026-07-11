@@ -1,7 +1,9 @@
-import { todayStatus, userProfile } from "../../data/mockData";
+import { useAppData } from "../../data/AppDataProvider";
 import Tag from "../ui/Tag";
 
 function Header({ currentLabel }) {
+  const { profile, todayStatus } = useAppData();
+
   return (
     <header className="app-header">
       <div className="app-header__title">
@@ -9,8 +11,8 @@ function Header({ currentLabel }) {
         <h1>{currentLabel}</h1>
       </div>
       <div className="app-header__profile">
-        <Tag tone="success">{userProfile.className}</Tag>
-        <span>Lv.{userProfile.level}</span>
+        <Tag tone="success">{profile.className}</Tag>
+        <span>Lv.{profile.level}</span>
       </div>
     </header>
   );

@@ -1,8 +1,10 @@
-import { coachMessage } from "../../data/mockData";
+import { useAppData } from "../../data/AppDataProvider";
 import Card from "../ui/Card";
 import Tag from "../ui/Tag";
 
 function CoachMessageCard() {
+  const { coachMessage } = useAppData();
+
   return (
     <Card className="coach-card" tone="accent">
       <div className="coach-card__label">

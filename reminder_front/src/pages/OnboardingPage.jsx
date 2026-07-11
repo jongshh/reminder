@@ -2,9 +2,11 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import SectionTitle from "../components/ui/SectionTitle";
 import Tag from "../components/ui/Tag";
-import { onboardingSteps } from "../data/mockData";
+import { useAppData } from "../data/AppDataProvider";
 
 function OnboardingPage({ onNavigate }) {
+  const { onboardingSteps } = useAppData();
+
   return (
     <div className="page">
       <section className="page-hero">

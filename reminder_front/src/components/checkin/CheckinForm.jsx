@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { checkinOptions, failureReasonOptions, todayStatus } from "../../data/mockData";
+import { useAppData } from "../../data/AppDataProvider";
 import Button from "../ui/Button";
 import Card from "../ui/Card";
 import Tag from "../ui/Tag";
@@ -9,6 +9,7 @@ import FailureReasonTags from "./FailureReasonTags";
 import TodayFocusInput from "./TodayFocusInput";
 
 function CheckinForm() {
+  const { checkinOptions, failureReasonOptions, todayStatus } = useAppData();
   const [mode, setMode] = useState("am");
   const [energy, setEnergy] = useState("normal");
   const [busyLevel, setBusyLevel] = useState("normal");

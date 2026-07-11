@@ -5,9 +5,11 @@ import WeeklySummaryCard from "../components/report/WeeklySummaryCard";
 import Card from "../components/ui/Card";
 import SectionTitle from "../components/ui/SectionTitle";
 import Tag from "../components/ui/Tag";
-import { weeklyReport } from "../data/mockData";
+import { useAppData } from "../data/AppDataProvider";
 
 function WeeklyReportPage() {
+  const { weeklyReport } = useAppData();
+
   return (
     <div className="page">
       <SectionTitle

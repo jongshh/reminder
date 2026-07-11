@@ -1,10 +1,19 @@
 function BottomNav({ activePage, navItems, onNavigate }) {
   return (
-    <aside className="sidebar">
+    <aside className="sidebar sidebar--simple">
       <div className="sidebar__brand">
         <span aria-hidden="true">✦</span>
-        <strong>Routine Room</strong>
+        <div>
+          <strong>루틴 포드</strong>
+          <small>기능은 여기서 이동해요</small>
+        </div>
       </div>
+
+      <button className="sidebar__quick-start" onClick={() => onNavigate("quests")} type="button">
+        <span aria-hidden="true">✓</span>
+        <strong>오늘 할 일</strong>
+      </button>
+
       <nav className="sidebar-nav" aria-label="주요 기능">
         {navItems.map((item) => (
           <button

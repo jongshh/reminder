@@ -17,14 +17,14 @@ import WeeklyReportPage from "./pages/WeeklyReportPage";
 import { getQuestById } from "./utils/questUtils";
 
 const navigationMeta = {
-  home: { icon: "H", label: "Studio", shortLabel: "Home" },
-  quests: { icon: "Q", label: "Daily Quests", shortLabel: "Quests" },
-  checkin: { icon: "C", label: "Condition Check", shortLabel: "Check" },
-  quest: { icon: "D", label: "Quest Detail", shortLabel: "Detail" },
-  report: { icon: "R", label: "Weekly Report", shortLabel: "Report" },
-  profile: { icon: "P", label: "Growth Log", shortLabel: "Profile" },
-  settings: { icon: "S", label: "Settings", shortLabel: "Settings" },
-  onboarding: { icon: "O", label: "Start Setup", shortLabel: "Start" },
+  home: { icon: "홈", label: "루틴 방", shortLabel: "홈" },
+  quests: { icon: "퀘", label: "오늘의 퀘스트", shortLabel: "퀘스트" },
+  checkin: { icon: "첵", label: "컨디션 체크", shortLabel: "체크" },
+  quest: { icon: "상", label: "퀘스트 상세", shortLabel: "상세" },
+  report: { icon: "주", label: "주간 리포트", shortLabel: "리포트" },
+  profile: { icon: "성", label: "성장 기록", shortLabel: "성장" },
+  settings: { icon: "설", label: "계정 설정", shortLabel: "설정" },
+  onboarding: { icon: "시", label: "시작 설정", shortLabel: "시작" },
 };
 
 function AuthenticatedApp() {
@@ -92,7 +92,7 @@ function AuthenticatedApp() {
       navItems={displayNavItems}
       onNavigate={setActivePage}
     >
-      {dataError ? <p className="form-error">Data sync error: {dataError}</p> : null}
+      {dataError ? <p className="form-error">데이터 동기화 오류: {dataError}</p> : null}
       {renderPage()}
     </AppLayout>
   );

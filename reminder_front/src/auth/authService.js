@@ -102,7 +102,7 @@ export const authService = {
     throwIfSupabaseError(error);
 
     if (!data.user) {
-      throw new Error("Login succeeded, but Supabase did not return a user.");
+      throw new Error("로그인은 완료됐지만 Supabase에서 사용자 정보를 받지 못했습니다.");
     }
 
     return createMemberSession(data.user);
@@ -113,7 +113,7 @@ export const authService = {
     const normalizedEmail = normalizeEmail(email);
     const profileSeed = {
       name: name.trim() || "Questlog User",
-      targetGoal: targetGoal.trim() || "Build a steady daily routine",
+      targetGoal: targetGoal.trim() || "매일 이어갈 작은 루틴 만들기",
     };
 
     clearGuestSession();
@@ -131,7 +131,7 @@ export const authService = {
     throwIfSupabaseError(error);
 
     if (!data.session?.user) {
-      throw new Error("Check your email to confirm the account, then log in.");
+      throw new Error("이메일 인증을 완료한 뒤 로그인해 주세요.");
     }
 
     return createMemberSession(data.session.user);

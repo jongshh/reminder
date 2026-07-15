@@ -12,11 +12,7 @@ function QuestDetailPage({ onToggleQuest, quest }) {
 
   return (
     <div className="page">
-      <SectionTitle
-        description="실행 · 복구"
-        eyebrow="Quest Detail"
-        title="상세"
-      />
+      <SectionTitle description="실행과 회복" eyebrow="퀘스트 상세" title="상세" />
 
       <div className="detail-layout">
         <Card className="quest-detail-card">
@@ -43,7 +39,7 @@ function QuestDetailPage({ onToggleQuest, quest }) {
             </ol>
           </div>
           <div className="detail-section">
-            <h3>복구</h3>
+            <h3>회복</h3>
             <p>{quest.recoveryAction}</p>
           </div>
           <Button onClick={() => onToggleQuest(quest.id)} variant={quest.completed ? "secondary" : "primary"}>

@@ -17,12 +17,12 @@ function SignupPage({ error, isSubmitting = false, onBack, onSubmit }) {
   return (
     <main className="auth-shell">
       <Card as="form" className="auth-form" onSubmit={handleSubmit} tone="accent">
-        <Tag tone="success">Signup</Tag>
-        <h1>Create account</h1>
-        <p>Your profile will be saved in Supabase and used to seed your app data.</p>
+        <Tag tone="success">회원가입</Tag>
+        <h1>계정 만들기</h1>
+        <p>프로필은 Supabase에 저장되고, 처음 앱 데이터를 만드는 기준으로 사용됩니다.</p>
 
         <label className="form-field">
-          <span>Name</span>
+          <span>이름</span>
           <input
             autoComplete="name"
             onChange={(event) => setName(event.target.value)}
@@ -33,7 +33,7 @@ function SignupPage({ error, isSubmitting = false, onBack, onSubmit }) {
         </label>
 
         <label className="form-field">
-          <span>Email</span>
+          <span>이메일</span>
           <input
             autoComplete="email"
             onChange={(event) => setEmail(event.target.value)}
@@ -44,7 +44,7 @@ function SignupPage({ error, isSubmitting = false, onBack, onSubmit }) {
         </label>
 
         <label className="form-field">
-          <span>Password</span>
+          <span>비밀번호</span>
           <input
             autoComplete="new-password"
             minLength={6}
@@ -56,10 +56,10 @@ function SignupPage({ error, isSubmitting = false, onBack, onSubmit }) {
         </label>
 
         <label className="form-field">
-          <span>Main goal</span>
+          <span>기본 목표</span>
           <input
             onChange={(event) => setTargetGoal(event.target.value)}
-            placeholder="Build a steady daily routine"
+            placeholder="매일 이어갈 작은 루틴 만들기"
             required
             type="text"
             value={targetGoal}
@@ -70,10 +70,10 @@ function SignupPage({ error, isSubmitting = false, onBack, onSubmit }) {
 
         <div className="auth-form__actions">
           <Button disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Creating..." : "Create account"}
+            {isSubmitting ? "계정 만드는 중..." : "회원가입"}
           </Button>
           <Button disabled={isSubmitting} onClick={onBack} type="button" variant="ghost">
-            Back
+            뒤로
           </Button>
         </div>
       </Card>

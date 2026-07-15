@@ -26,10 +26,10 @@ function ConfirmAction({ confirmLabel, description, onConfirm, title, variant = 
         <p>{description}</p>
         <div className="settings-actions">
           <Button disabled={isWorking} onClick={handleConfirm} variant={variant}>
-            {isWorking ? "Working..." : confirmLabel}
+            {isWorking ? "처리 중..." : confirmLabel}
           </Button>
           <Button disabled={isWorking} onClick={() => setIsConfirming(false)} variant="ghost">
-            Cancel
+            취소
           </Button>
         </div>
       </div>
@@ -47,7 +47,7 @@ function CapabilityRow({ enabled, label }) {
   return (
     <div className="settings-row">
       <span>{label}</span>
-      <Tag tone={enabled ? "success" : "neutral"}>{enabled ? "Enabled" : "Off"}</Tag>
+      <Tag tone={enabled ? "success" : "neutral"}>{enabled ? "사용 가능" : "비활성"}</Tag>
     </div>
   );
 }
@@ -71,12 +71,12 @@ function SettingsPage({ onNavigate }) {
       <SectionTitle
         action={
           <Button onClick={() => onNavigate("profile")} size="sm" variant="ghost">
-            Profile
+            프로필
           </Button>
         }
-        description="Account, data, and connected features"
-        eyebrow="Settings"
-        title="Settings"
+        description="계정, 데이터, 연결 기능"
+        eyebrow="설정"
+        title="설정"
       />
 
       {dataError ? <p className="form-error">{dataError}</p> : null}
@@ -84,37 +84,37 @@ function SettingsPage({ onNavigate }) {
       <section className="settings-grid">
         <Card className="settings-card" tone="accent">
           <div className="settings-card__header">
-            <Tag tone={isGuest ? "warning" : "main"}>{isGuest ? "Guest" : "Member"}</Tag>
-            <strong>{isGuest ? "Guest session" : profile.name}</strong>
+            <Tag tone={isGuest ? "warning" : "main"}>{isGuest ? "게스트" : "회원"}</Tag>
+            <strong>{isGuest ? "게스트 세션" : profile.name}</strong>
           </div>
           <p>
             {isGuest
-              ? "Guest data stays in this browser only."
-              : profile.email ?? "Your account is connected to Supabase."}
+              ? "게스트 데이터는 이 브라우저에만 저장됩니다."
+              : profile.email ?? "계정이 Supabase에 연결되어 있습니다."}
           </p>
         </Card>
 
         <Card className="settings-card">
-          <h3>Connected features</h3>
-          <CapabilityRow enabled={capabilities.cloudSync} label="Cloud sync" />
-          <CapabilityRow enabled={capabilities.leaderboard} label="Leaderboard" />
+          <h3>연결 기능</h3>
+          <CapabilityRow enabled={capabilities.cloudSync} label="클라우드 동기화" />
+          <CapabilityRow enabled={capabilities.leaderboard} label="리더보드" />
         </Card>
       </section>
 
       <Card className="settings-card">
-        <h3>Account management</h3>
+        <h3>계정 관리</h3>
         {isGuest ? (
           <>
-            <p>Resetting guest data restores the local app data in this browser to the default state.</p>
+            <p>게스트 데이터를 초기화하면 이 브라우저에 저장된 앱 데이터가 기본 상태로 돌아갑니다.</p>
             <div className="settings-actions">
               <Button onClick={logout} variant="secondary">
-                End session
+                세션 종료
               </Button>
               <ConfirmAction
-                confirmLabel="Reset data"
-                description="This clears guest quests, profile data, and local progress for this browser."
+                confirmLabel="데이터 초기화"
+                description="이 브라우저에 저장된 게스트 퀘스트, 프로필, 진행 기록을 초기화합니다."
                 onConfirm={handleResetGuestData}
-                title="Reset guest data"
+                title="게스트 데이터 초기화"
                 variant="ghost"
               />
             </div>
@@ -122,18 +122,18 @@ function SettingsPage({ onNavigate }) {
         ) : (
           <>
             <p>
-              Logout ends the current session. Delete account data removes your profile and app data rows, then signs
-              you out. Deleting the Supabase Auth user itself should be added later through a server or Edge Function.
+              로그아웃은 현재 세션만 종료합니다. 계정 데이터 삭제는 Supabase의 프로필과 앱 데이터 row를 지운 뒤
+              로그아웃합니다. Supabase Auth 사용자 자체 삭제는 이후 서버나 Edge Function으로 추가해야 합니다.
             </p>
             <div className="settings-actions">
               <Button onClick={logout} variant="secondary">
-                Log out
+                로그아웃
               </Button>
               <ConfirmAction
-                confirmLabel="Delete data"
-                description="This removes your Supabase profile and app data rows, then logs you out."
+                confirmLabel="데이터 삭제"
+                description="Supabase 프로필과 앱 데이터 row를 삭제한 뒤 로그아웃합니다."
                 onConfirm={handleDeleteAccount}
-                title="Delete account data"
+                title="계정 데이터 삭제"
                 variant="danger"
               />
             </div>

@@ -48,7 +48,7 @@ const removeItem = (key) => {
 const normalizeProfile = (profile) => ({
   email: profile?.email ?? "",
   name: profile?.name || "Questlog User",
-  targetGoal: profile?.target_goal || profile?.targetGoal || "Build a steady daily routine",
+  targetGoal: profile?.target_goal || profile?.targetGoal || "매일 이어갈 작은 루틴 만들기",
 });
 
 const createInitialData = (profileSeed) => {

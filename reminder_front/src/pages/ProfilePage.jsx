@@ -13,13 +13,13 @@ function ProfilePage({ onNavigate }) {
 
   return (
     <div className="page">
-      <SectionTitle description="레벨 · 연속 · 배지" eyebrow="Profile / Growth" title="성장" />
+      <SectionTitle description="레벨, 연속 기록, 배지" eyebrow="프로필 / 성장" title="성장" />
 
       <Card className="profile-card" tone="accent">
         <Tag tone="main">{profile.classLabel}</Tag>
         <h2>{profile.name}</h2>
         <p>{profile.targetGoal}</p>
-        {!capabilities.cloudSync ? <small>게스트 데이터는 이 기기 안에서만 유지됩니다.</small> : null}
+        {!capabilities.cloudSync ? <small>게스트 데이터는 이 기기 안에만 저장됩니다.</small> : null}
         <div className="profile-card__actions">
           <Button onClick={() => onNavigate("settings")} size="sm" variant="ghost">
             설정

@@ -12,11 +12,7 @@ function WeeklyReportPage() {
 
   return (
     <div className="page">
-      <SectionTitle
-        description="성공률 · 패턴"
-        eyebrow="Weekly Report"
-        title="주간"
-      />
+      <SectionTitle description="성공률과 패턴" eyebrow="주간 리포트" title="주간" />
       <div className="report-grid">
         <WeeklySummaryCard report={weeklyReport} />
         <CompletionRateCard report={weeklyReport} />
@@ -26,7 +22,7 @@ function WeeklyReportPage() {
           <span>집중 시간</span>
         </Card>
         <Card className="stat-card stat-card--recovery">
-          <Tag tone="recovery">복귀율</Tag>
+          <Tag tone="recovery">회복</Tag>
           <strong>{weeklyReport.recoveryRate}%</strong>
           <span>48시간</span>
         </Card>

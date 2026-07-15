@@ -12,7 +12,7 @@ export const supabase = isSupabaseConfigured
 export const requireSupabase = () => {
   if (!supabase) {
     throw new Error(
-      "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to reminder_front/.env.local.",
+      "Supabase 설정이 없습니다. reminder_front/.env.local에 VITE_SUPABASE_URL과 VITE_SUPABASE_PUBLISHABLE_KEY를 추가해 주세요.",
     );
   }
 

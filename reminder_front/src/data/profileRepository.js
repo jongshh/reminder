@@ -68,6 +68,35 @@ const createInitialData = (profileSeed) => {
   return data;
 };
 
+const mergeWithDefaultData = (data, profileSeed) => {
+  const initialData = createInitialData(profileSeed);
+
+  if (!data || typeof data !== "object") {
+    return initialData;
+  }
+
+  return {
+    ...initialData,
+    ...data,
+    profile: {
+      ...initialData.profile,
+      ...data.profile,
+    },
+    spaceProfile: {
+      ...initialData.spaceProfile,
+      ...data.spaceProfile,
+    },
+    checkinOptions: {
+      ...initialData.checkinOptions,
+      ...data.checkinOptions,
+    },
+    weeklyReport: {
+      ...initialData.weeklyReport,
+      ...data.weeklyReport,
+    },
+  };
+};
+
 const throwIfSupabaseError = (error) => {
   if (error) {
     throw new Error(error.message);
@@ -114,7 +143,7 @@ const upsertMemberAppData = async (userId, data) => {
 
 export const profileRepository = {
   loadGuestData() {
-    return readJson(GUEST_DATA_KEY, createInitialData());
+    return mergeWithDefaultData(readJson(GUEST_DATA_KEY, null));
   },
 
   async loadMemberData(session) {
@@ -129,7 +158,10 @@ export const profileRepository = {
     throwIfSupabaseError(error);
 
     if (data?.data) {
-      return data.data;
+      return mergeWithDefaultData(data.data, {
+        email: session.email,
+        ...profile,
+      });
     }
 
     const initialData = createInitialData({

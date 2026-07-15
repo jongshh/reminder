@@ -16,7 +16,8 @@ const mascotFrames = [
 
 function RoomCanvas() {
   const { roomItems, spaceProfile } = useAppData();
-  const equippedCount = roomItems.filter((item) => item.equipped).length;
+  const safeRoomItems = Array.isArray(roomItems) ? roomItems : [];
+  const equippedCount = safeRoomItems.filter((item) => item.equipped).length;
 
   return (
     <section className="room-card room-card--photo main-room-card" aria-label="나의 루틴 방">

@@ -3,7 +3,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Tag from "../components/ui/Tag";
 
-function LoginPage({ onBack, onSubmit }) {
+function LoginPage({ error, isSubmitting = false, onBack, onSubmit }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -16,11 +16,11 @@ function LoginPage({ onBack, onSubmit }) {
     <main className="auth-shell">
       <Card as="form" className="auth-form" onSubmit={handleSubmit} tone="accent">
         <Tag tone="main">Login</Tag>
-        <h1>로그인</h1>
-        <p>돌아오신 것을 환영해요</p>
+        <h1>Log in</h1>
+        <p>Welcome back. Your synced Questlog data will load after login.</p>
 
         <label className="form-field">
-          <span>이메일</span>
+          <span>Email</span>
           <input
             autoComplete="email"
             onChange={(event) => setEmail(event.target.value)}
@@ -31,10 +31,10 @@ function LoginPage({ onBack, onSubmit }) {
         </label>
 
         <label className="form-field">
-          <span>비밀번호</span>
+          <span>Password</span>
           <input
             autoComplete="current-password"
-            minLength={4}
+            minLength={6}
             onChange={(event) => setPassword(event.target.value)}
             required
             type="password"
@@ -42,10 +42,14 @@ function LoginPage({ onBack, onSubmit }) {
           />
         </label>
 
+        {error ? <p className="form-error">{error}</p> : null}
+
         <div className="auth-form__actions">
-          <Button type="submit">로그인</Button>
-          <Button onClick={onBack} type="button" variant="ghost">
-            뒤로
+          <Button disabled={isSubmitting} type="submit">
+            {isSubmitting ? "Signing in..." : "Log in"}
+          </Button>
+          <Button disabled={isSubmitting} onClick={onBack} type="button" variant="ghost">
+            Back
           </Button>
         </div>
       </Card>

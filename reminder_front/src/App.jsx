@@ -17,18 +17,18 @@ import WeeklyReportPage from "./pages/WeeklyReportPage";
 import { getQuestById } from "./utils/questUtils";
 
 const navigationMeta = {
-  home: { icon: "◒", label: "스튜디오", shortLabel: "작업방" },
-  quests: { icon: "✓", label: "오늘 할 일", shortLabel: "할 일" },
-  checkin: { icon: "◐", label: "컨디션", shortLabel: "체크" },
-  quest: { icon: "◇", label: "루틴 상세", shortLabel: "상세" },
-  report: { icon: "▣", label: "주간 기록", shortLabel: "기록" },
-  profile: { icon: "☆", label: "성장 로그", shortLabel: "성장" },
-  settings: { icon: "⚙", label: "설정", shortLabel: "설정" },
-  onboarding: { icon: "◎", label: "시작 설정", shortLabel: "시작" },
+  home: { icon: "H", label: "Studio", shortLabel: "Home" },
+  quests: { icon: "Q", label: "Daily Quests", shortLabel: "Quests" },
+  checkin: { icon: "C", label: "Condition Check", shortLabel: "Check" },
+  quest: { icon: "D", label: "Quest Detail", shortLabel: "Detail" },
+  report: { icon: "R", label: "Weekly Report", shortLabel: "Report" },
+  profile: { icon: "P", label: "Growth Log", shortLabel: "Profile" },
+  settings: { icon: "S", label: "Settings", shortLabel: "Settings" },
+  onboarding: { icon: "O", label: "Start Setup", shortLabel: "Start" },
 };
 
 function AuthenticatedApp() {
-  const { navItems, quests, setQuests } = useAppData();
+  const { dataError, isDataReady, navItems, quests, setQuests } = useAppData();
   const [activePage, setActivePage] = useState("home");
   const [selectedQuestId, setSelectedQuestId] = useState(quests[0]?.id);
 
@@ -53,6 +53,10 @@ function AuthenticatedApp() {
   };
 
   const renderPage = () => {
+    if (!isDataReady) {
+      return <AuthLoadingPage />;
+    }
+
     switch (activePage) {
       case "onboarding":
         return <OnboardingPage onNavigate={setActivePage} />;
@@ -88,25 +92,47 @@ function AuthenticatedApp() {
       navItems={displayNavItems}
       onNavigate={setActivePage}
     >
+      {dataError ? <p className="form-error">Data sync error: {dataError}</p> : null}
       {renderPage()}
     </AppLayout>
   );
 }
 
 function App() {
-  const { continueAsGuest, isRestoring, login, session, signup } = useAuth();
+  const {
+    authError,
+    clearAuthError,
+    continueAsGuest,
+    isAuthSubmitting,
+    isRestoring,
+    login,
+    session,
+    signup,
+  } = useAuth();
   const [authPage, setAuthPage] = useState("entry");
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const startAuthTransition = useCallback((authenticate) => {
-    authenticate();
-    setIsTransitioning(true);
+  const startAuthTransition = useCallback(async (authenticate) => {
+    try {
+      await authenticate();
+      setIsTransitioning(true);
+    } catch {
+      setIsTransitioning(false);
+    }
   }, []);
 
   const finishAuthTransition = useCallback(() => {
     setAuthPage("entry");
     setIsTransitioning(false);
   }, []);
+
+  const goToAuthPage = useCallback(
+    (page) => {
+      clearAuthError();
+      setAuthPage(page);
+    },
+    [clearAuthError],
+  );
 
   if (isRestoring) {
     return <AuthLoadingPage />;
@@ -117,14 +143,18 @@ function App() {
       case "login":
         return (
           <LoginPage
-            onBack={() => setAuthPage("entry")}
+            error={authError}
+            isSubmitting={isAuthSubmitting}
+            onBack={() => goToAuthPage("entry")}
             onSubmit={(credentials) => startAuthTransition(() => login(credentials))}
           />
         );
       case "signup":
         return (
           <SignupPage
-            onBack={() => setAuthPage("entry")}
+            error={authError}
+            isSubmitting={isAuthSubmitting}
+            onBack={() => goToAuthPage("entry")}
             onSubmit={(details) => startAuthTransition(() => signup(details))}
           />
         );
@@ -133,8 +163,8 @@ function App() {
         return (
           <AuthEntryPage
             onGuest={() => startAuthTransition(continueAsGuest)}
-            onLogin={() => setAuthPage("login")}
-            onSignup={() => setAuthPage("signup")}
+            onLogin={() => goToAuthPage("login")}
+            onSignup={() => goToAuthPage("signup")}
           />
         );
     }

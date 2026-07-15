@@ -7,11 +7,10 @@ import ProgressBar from "../components/ui/ProgressBar";
 import SectionTitle from "../components/ui/SectionTitle";
 import Tag from "../components/ui/Tag";
 import { useAppData } from "../data/AppDataProvider";
-import { spaceProfile } from "../data/mockData";
 import { getQuestStats } from "../utils/questUtils";
 
 function QuestPage({ onOpenQuest, onToggleQuest, quests }) {
-  const { profile, todayStatus } = useAppData();
+  const { profile, spaceProfile, todayStatus } = useAppData();
   const stats = getQuestStats(quests);
 
   return (

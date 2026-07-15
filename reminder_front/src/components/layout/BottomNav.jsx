@@ -5,7 +5,7 @@ function BottomNav({ activePage, navItems, onNavigate }) {
         <span aria-hidden="true">✦</span>
         <div>
           <strong>루틴 포드</strong>
-          <small>기능은 여기서 이동해요</small>
+          <small>빠른 이동</small>
         </div>
       </div>
 

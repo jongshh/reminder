@@ -1,5 +1,6 @@
-const SESSION_KEY = "questlog.auth.session";
-const MEMBERS_KEY = "questlog.auth.members";
+import { requireSupabase, supabase } from "../lib/supabaseClient";
+
+const GUEST_SESSION_KEY = "questlog.auth.guestSession";
 
 const getStorage = () => {
   if (typeof window === "undefined") {
@@ -40,81 +41,133 @@ const removeItem = (key) => {
   }
 };
 
-const normalizeEmail = (email) => email.trim().toLowerCase();
+const normalizeEmail = (email = "") => email.trim().toLowerCase();
 
-const createMemberId = (email) => `member:${normalizeEmail(email)}`;
-
-const createSession = ({ mode, userId }) => ({
-  mode,
-  userId,
-  profileId: `${mode}:${userId}`,
+const createGuestSession = () => ({
+  mode: "guest",
+  userId: "guest:local",
+  profileId: "guest:guest:local",
   isAuthenticated: true,
 });
 
-const saveSession = (session) => {
-  writeJson(SESSION_KEY, session);
+const createMemberSession = (user) => ({
+  mode: "member",
+  userId: user.id,
+  profileId: `member:${user.id}`,
+  email: user.email,
+  isAuthenticated: true,
+});
+
+const saveGuestSession = (session) => {
+  writeJson(GUEST_SESSION_KEY, session);
   return session;
 };
 
+const clearGuestSession = () => {
+  removeItem(GUEST_SESSION_KEY);
+};
+
+const throwIfSupabaseError = (error) => {
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const authService = {
-  restoreSession() {
-    return readJson(SESSION_KEY, null);
-  },
+  async restoreSession() {
+    const guestSession = readJson(GUEST_SESSION_KEY, null);
 
-  login({ email, password }) {
-    const normalizedEmail = normalizeEmail(email);
-    const members = readJson(MEMBERS_KEY, {});
-    const userId = createMemberId(normalizedEmail);
-
-    if (!members[userId]) {
-      members[userId] = {
-        email: normalizedEmail,
-        name: normalizedEmail.split("@")[0] || "Questlog User",
-        password,
-        targetGoal: "오늘의 루틴 만들기",
-        userId,
-      };
-      writeJson(MEMBERS_KEY, members);
+    if (guestSession?.mode === "guest") {
+      return guestSession;
     }
 
-    return saveSession(createSession({ mode: "member", userId }));
+    if (!supabase) {
+      return null;
+    }
+
+    const { data, error } = await supabase.auth.getSession();
+    throwIfSupabaseError(error);
+
+    return data.session?.user ? createMemberSession(data.session.user) : null;
   },
 
-  signup({ email, name, password, targetGoal }) {
-    const normalizedEmail = normalizeEmail(email);
-    const members = readJson(MEMBERS_KEY, {});
-    const userId = createMemberId(normalizedEmail);
+  async login({ email, password }) {
+    const client = requireSupabase();
+    clearGuestSession();
 
-    members[userId] = {
-      email: normalizedEmail,
-      name: name.trim() || "Questlog User",
+    const { data, error } = await client.auth.signInWithPassword({
+      email: normalizeEmail(email),
       password,
-      targetGoal: targetGoal.trim() || "오늘의 루틴 만들기",
-      userId,
-    };
-    writeJson(MEMBERS_KEY, members);
+    });
+    throwIfSupabaseError(error);
 
-    return saveSession(createSession({ mode: "member", userId }));
+    if (!data.user) {
+      throw new Error("Login succeeded, but Supabase did not return a user.");
+    }
+
+    return createMemberSession(data.user);
+  },
+
+  async signup({ email, name, password, targetGoal }) {
+    const client = requireSupabase();
+    const normalizedEmail = normalizeEmail(email);
+    const profileSeed = {
+      name: name.trim() || "Questlog User",
+      targetGoal: targetGoal.trim() || "Build a steady daily routine",
+    };
+
+    clearGuestSession();
+
+    const { data, error } = await client.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        data: {
+          name: profileSeed.name,
+          target_goal: profileSeed.targetGoal,
+        },
+      },
+    });
+    throwIfSupabaseError(error);
+
+    if (!data.session?.user) {
+      throw new Error("Check your email to confirm the account, then log in.");
+    }
+
+    return createMemberSession(data.session.user);
   },
 
   continueAsGuest() {
-    const userId = "guest:local";
-    return saveSession(createSession({ mode: "guest", userId }));
+    return saveGuestSession(createGuestSession());
   },
 
-  logout() {
-    removeItem(SESSION_KEY);
+  async logout() {
+    clearGuestSession();
+
+    if (supabase) {
+      const { error } = await supabase.auth.signOut();
+      throwIfSupabaseError(error);
+    }
   },
 
-  deleteAccount(userId) {
-    const members = readJson(MEMBERS_KEY, {});
-    delete members[userId];
-    writeJson(MEMBERS_KEY, members);
-    removeItem(SESSION_KEY);
-  },
-};
+  async deleteAccount() {
+    clearGuestSession();
 
-export const getMemberProfileSeed = (userId) => {
-  const members = readJson(MEMBERS_KEY, {});
-  return members[userId] ?? null;
+    if (supabase) {
+      const { error } = await supabase.auth.signOut();
+      throwIfSupabaseError(error);
+    }
+  },
+
+  onAuthStateChange(callback) {
+    if (!supabase) {
+      return () => {};
+    }
+
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      callback(session?.user ? createMemberSession(session.user) : null);
+    });
+
+    return () => data.subscription.unsubscribe();
+  },
 };

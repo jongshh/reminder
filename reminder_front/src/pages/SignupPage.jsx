@@ -3,7 +3,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Tag from "../components/ui/Tag";
 
-function SignupPage({ onBack, onSubmit }) {
+function SignupPage({ error, isSubmitting = false, onBack, onSubmit }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,11 +18,11 @@ function SignupPage({ onBack, onSubmit }) {
     <main className="auth-shell">
       <Card as="form" className="auth-form" onSubmit={handleSubmit} tone="accent">
         <Tag tone="success">Signup</Tag>
-        <h1>새 계정 만들기</h1>
-        <p>나의 목표를 적어보아요!</p>
+        <h1>Create account</h1>
+        <p>Your profile will be saved in Supabase and used to seed your app data.</p>
 
         <label className="form-field">
-          <span>이름</span>
+          <span>Name</span>
           <input
             autoComplete="name"
             onChange={(event) => setName(event.target.value)}
@@ -33,7 +33,7 @@ function SignupPage({ onBack, onSubmit }) {
         </label>
 
         <label className="form-field">
-          <span>이메일</span>
+          <span>Email</span>
           <input
             autoComplete="email"
             onChange={(event) => setEmail(event.target.value)}
@@ -44,10 +44,10 @@ function SignupPage({ onBack, onSubmit }) {
         </label>
 
         <label className="form-field">
-          <span>비밀번호</span>
+          <span>Password</span>
           <input
             autoComplete="new-password"
-            minLength={4}
+            minLength={6}
             onChange={(event) => setPassword(event.target.value)}
             required
             type="password"
@@ -56,20 +56,24 @@ function SignupPage({ onBack, onSubmit }) {
         </label>
 
         <label className="form-field">
-          <span>기본 목표</span>
+          <span>Main goal</span>
           <input
             onChange={(event) => setTargetGoal(event.target.value)}
-            placeholder="예: 토익 루틴 회복"
+            placeholder="Build a steady daily routine"
             required
             type="text"
             value={targetGoal}
           />
         </label>
 
+        {error ? <p className="form-error">{error}</p> : null}
+
         <div className="auth-form__actions">
-          <Button type="submit">회원가입</Button>
-          <Button onClick={onBack} type="button" variant="ghost">
-            뒤로
+          <Button disabled={isSubmitting} type="submit">
+            {isSubmitting ? "Creating..." : "Create account"}
+          </Button>
+          <Button disabled={isSubmitting} onClick={onBack} type="button" variant="ghost">
+            Back
           </Button>
         </div>
       </Card>

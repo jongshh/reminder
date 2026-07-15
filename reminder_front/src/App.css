@@ -795,6 +795,15 @@ small {
   font-weight: 800;
 }
 
+.form-error {
+  border: 1px solid #e7b4a8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff1ee;
+  color: #9d3e29;
+  font-weight: 800;
+}
+
 .step-card > span {
   color: #ea6f58;
   font-weight: 900;

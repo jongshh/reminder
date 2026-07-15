@@ -4,57 +4,119 @@ import { authService } from "./authService";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(null);
+  const [authError, setAuthError] = useState("");
+  const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const [isRestoring, setIsRestoring] = useState(true);
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    setSession(authService.restoreSession());
-    setIsRestoring(false);
+    let isCurrent = true;
+
+    const restore = async () => {
+      try {
+        const restoredSession = await authService.restoreSession();
+
+        if (isCurrent) {
+          setSession(restoredSession);
+          setAuthError("");
+        }
+      } catch (error) {
+        if (isCurrent) {
+          setAuthError(error.message);
+        }
+      } finally {
+        if (isCurrent) {
+          setIsRestoring(false);
+        }
+      }
+    };
+
+    const unsubscribe = authService.onAuthStateChange((nextSession) => {
+      setSession((currentSession) => {
+        if (currentSession?.mode === "guest") {
+          return currentSession;
+        }
+
+        return nextSession;
+      });
+    });
+
+    restore();
+
+    return () => {
+      isCurrent = false;
+      unsubscribe();
+    };
   }, []);
 
-  const login = useCallback((credentials) => {
-    const nextSession = authService.login(credentials);
-    setSession(nextSession);
-    return nextSession;
+  const runAuthAction = useCallback(async (action) => {
+    setIsAuthSubmitting(true);
+    setAuthError("");
+
+    try {
+      const nextSession = await action();
+      setSession(nextSession);
+      return nextSession;
+    } catch (error) {
+      setAuthError(error.message);
+      throw error;
+    } finally {
+      setIsAuthSubmitting(false);
+    }
   }, []);
 
-  const signup = useCallback((details) => {
-    const nextSession = authService.signup(details);
-    setSession(nextSession);
-    return nextSession;
-  }, []);
+  const login = useCallback((credentials) => runAuthAction(() => authService.login(credentials)), [runAuthAction]);
 
-  const continueAsGuest = useCallback(() => {
-    const nextSession = authService.continueAsGuest();
-    setSession(nextSession);
-    return nextSession;
-  }, []);
+  const signup = useCallback((details) => runAuthAction(() => authService.signup(details)), [runAuthAction]);
 
-  const logout = useCallback(() => {
-    authService.logout();
+  const continueAsGuest = useCallback(
+    () => runAuthAction(() => Promise.resolve(authService.continueAsGuest())),
+    [runAuthAction],
+  );
+
+  const logout = useCallback(async () => {
+    await authService.logout();
     setSession(null);
   }, []);
 
-  const deleteAccount = useCallback(() => {
+  const deleteAccount = useCallback(async () => {
     if (!session) {
       return;
     }
 
-    authService.deleteAccount(session.userId);
+    await authService.deleteAccount();
     setSession(null);
   }, [session]);
 
+  const clearAuthError = useCallback(() => {
+    setAuthError("");
+  }, []);
+
   const value = useMemo(
     () => ({
+      authError,
+      clearAuthError,
       continueAsGuest,
       deleteAccount,
+      isAuthSubmitting,
       isRestoring,
       login,
       logout,
       session,
       signup,
     }),
-    [continueAsGuest, deleteAccount, isRestoring, login, logout, session, signup],
+    [
+      authError,
+      clearAuthError,
+      continueAsGuest,
+      deleteAccount,
+      isAuthSubmitting,
+      isRestoring,
+      login,
+      logout,
+      session,
+      signup,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,8 +1,8 @@
-import { getMemberProfileSeed } from "../auth/authService";
+import { requireSupabase } from "../lib/supabaseClient";
 import { defaultAppData } from "./defaultAppData";
 
 const GUEST_DATA_KEY = "questlog.data.guest";
-const MEMBER_DATA_PREFIX = "questlog.data.member.";
+const APP_DATA_SCHEMA_VERSION = 1;
 
 const getStorage = () => {
   if (typeof window === "undefined") {
@@ -45,45 +45,123 @@ const removeItem = (key) => {
   }
 };
 
+const normalizeProfile = (profile) => ({
+  email: profile?.email ?? "",
+  name: profile?.name || "Questlog User",
+  targetGoal: profile?.target_goal || profile?.targetGoal || "Build a steady daily routine",
+});
+
 const createInitialData = (profileSeed) => {
   const data = clone(defaultAppData);
 
   if (profileSeed) {
+    const profile = normalizeProfile(profileSeed);
+
     data.profile = {
       ...data.profile,
-      email: profileSeed.email,
-      name: profileSeed.name || data.profile.name,
-      targetGoal: profileSeed.targetGoal || data.profile.targetGoal,
+      email: profile.email,
+      name: profile.name,
+      targetGoal: profile.targetGoal,
     };
   }
 
   return data;
 };
 
-const memberDataKey = (userId) => `${MEMBER_DATA_PREFIX}${userId}`;
+const throwIfSupabaseError = (error) => {
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+const loadMemberProfile = async (userId) => {
+  const client = requireSupabase();
+  const { data, error } = await client
+    .from("profiles")
+    .select("id,email,name,target_goal")
+    .eq("id", userId)
+    .maybeSingle();
+
+  throwIfSupabaseError(error);
+  return data;
+};
+
+const upsertMemberProfile = async (userId, profile) => {
+  const client = requireSupabase();
+  const normalizedProfile = normalizeProfile(profile);
+  const { error } = await client.from("profiles").upsert({
+    id: userId,
+    email: normalizedProfile.email,
+    name: normalizedProfile.name,
+    target_goal: normalizedProfile.targetGoal,
+    updated_at: new Date().toISOString(),
+  });
+
+  throwIfSupabaseError(error);
+};
+
+const upsertMemberAppData = async (userId, data) => {
+  const client = requireSupabase();
+  const { error } = await client.from("app_data").upsert({
+    user_id: userId,
+    data,
+    schema_version: APP_DATA_SCHEMA_VERSION,
+    updated_at: new Date().toISOString(),
+  });
+
+  throwIfSupabaseError(error);
+};
 
 export const profileRepository = {
   loadGuestData() {
     return readJson(GUEST_DATA_KEY, createInitialData());
   },
 
-  loadMemberData(userId) {
-    return readJson(memberDataKey(userId), createInitialData(getMemberProfileSeed(userId)));
+  async loadMemberData(session) {
+    const client = requireSupabase();
+    const profile = await loadMemberProfile(session.userId);
+    const { data, error } = await client
+      .from("app_data")
+      .select("data")
+      .eq("user_id", session.userId)
+      .maybeSingle();
+
+    throwIfSupabaseError(error);
+
+    if (data?.data) {
+      return data.data;
+    }
+
+    const initialData = createInitialData({
+      email: session.email,
+      ...profile,
+    });
+
+    await upsertMemberProfile(session.userId, initialData.profile);
+    await upsertMemberAppData(session.userId, initialData);
+
+    return initialData;
   },
 
   saveGuestData(data) {
     writeJson(GUEST_DATA_KEY, data);
   },
 
-  saveMemberData(userId, data) {
-    writeJson(memberDataKey(userId), data);
+  async saveMemberData(session, data) {
+    await upsertMemberProfile(session.userId, data.profile);
+    await upsertMemberAppData(session.userId, data);
   },
 
   deleteGuestData() {
     removeItem(GUEST_DATA_KEY);
   },
 
-  deleteMemberData(userId) {
-    removeItem(memberDataKey(userId));
+  async deleteMemberData(session) {
+    const client = requireSupabase();
+    const { error: appDataError } = await client.from("app_data").delete().eq("user_id", session.userId);
+    throwIfSupabaseError(appDataError);
+
+    const { error: profileError } = await client.from("profiles").delete().eq("id", session.userId);
+    throwIfSupabaseError(profileError);
   },
 };

@@ -1,5 +1,5 @@
 import { brand } from "../../config/brand";
-import { roomItems, spaceProfile } from "../../data/mockData";
+import { useAppData } from "../../data/AppDataProvider";
 import Button from "../ui/Button";
 import Tag from "../ui/Tag";
 
@@ -15,6 +15,7 @@ const mascotFrames = [
 ];
 
 function RoomCanvas() {
+  const { roomItems, spaceProfile } = useAppData();
   const equippedCount = roomItems.filter((item) => item.equipped).length;
 
   return (

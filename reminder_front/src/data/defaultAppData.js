@@ -5,6 +5,8 @@ import {
   failureReasonOptions,
   navItems,
   onboardingSteps,
+  roomItems,
+  spaceProfile,
   todayQuests,
   todayStatus,
   userProfile,
@@ -20,6 +22,8 @@ export const defaultAppData = {
   onboardingSteps,
   profile: userProfile,
   quests: todayQuests,
+  roomItems,
+  spaceProfile,
   todayStatus,
   weeklyReport,
 };

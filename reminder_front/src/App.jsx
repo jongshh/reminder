@@ -17,14 +17,14 @@ import WeeklyReportPage from "./pages/WeeklyReportPage";
 import { getQuestById } from "./utils/questUtils";
 
 const navigationMeta = {
-  home: { icon: "홈", label: "루틴 방", shortLabel: "홈" },
-  quests: { icon: "퀘", label: "오늘의 퀘스트", shortLabel: "퀘스트" },
-  checkin: { icon: "첵", label: "컨디션 체크", shortLabel: "체크" },
-  quest: { icon: "상", label: "퀘스트 상세", shortLabel: "상세" },
-  report: { icon: "주", label: "주간 리포트", shortLabel: "리포트" },
-  profile: { icon: "성", label: "성장 기록", shortLabel: "성장" },
-  settings: { icon: "설", label: "계정 설정", shortLabel: "설정" },
-  onboarding: { icon: "시", label: "시작 설정", shortLabel: "시작" },
+  home: { icon: "◒", label: "스튜디오", shortLabel: "작업방" },
+  quests: { icon: "✓", label: "오늘 할 일", shortLabel: "할 일" },
+  checkin: { icon: "◐", label: "컨디션", shortLabel: "체크" },
+  quest: { icon: "◇", label: "루틴 상세", shortLabel: "상세" },
+  report: { icon: "▣", label: "주간 기록", shortLabel: "기록" },
+  profile: { icon: "☆", label: "성장 로그", shortLabel: "성장" },
+  settings: { icon: "⚙", label: "설정", shortLabel: "설정" },
+  onboarding: { icon: "◎", label: "시작 설정", shortLabel: "시작" },
 };
 
 function AuthenticatedApp() {

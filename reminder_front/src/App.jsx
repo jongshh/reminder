@@ -4,6 +4,7 @@ import AppLayout from "./components/layout/AppLayout";
 import { AppDataProvider, useAppData } from "./data/AppDataProvider";
 import AuthEntryPage from "./pages/AuthEntryPage";
 import AuthLoadingPage from "./pages/AuthLoadingPage";
+import CharacterPage from "./pages/CharacterPage";
 import CheckinPage from "./pages/CheckinPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -18,6 +19,7 @@ import { getQuestById } from "./utils/questUtils";
 
 const navigationMeta = {
   home: { icon: "◒", label: "스튜디오", shortLabel: "작업방" },
+  characters: { icon: "☺", label: "캐릭터", shortLabel: "친구" },
   quests: { icon: "✓", label: "오늘 할 일", shortLabel: "할 일" },
   checkin: { icon: "◐", label: "컨디션", shortLabel: "체크" },
   quest: { icon: "◇", label: "루틴 상세", shortLabel: "상세" },
@@ -62,6 +64,8 @@ function AuthenticatedApp() {
         return <OnboardingPage onNavigate={setActivePage} />;
       case "checkin":
         return <CheckinPage />;
+      case "characters":
+        return <CharacterPage />;
       case "quests":
         return <QuestPage onOpenQuest={handleOpenQuest} onToggleQuest={handleToggleQuest} quests={quests} />;
       case "quest":

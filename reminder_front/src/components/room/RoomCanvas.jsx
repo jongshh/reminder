@@ -1,35 +1,27 @@
 import { brand } from "../../config/brand";
 import { useAppData } from "../../data/AppDataProvider";
+import { getCharacterById } from "../../data/characters";
+import CharacterAvatar from "../character/CharacterAvatar";
 import Button from "../ui/Button";
 import Tag from "../ui/Tag";
 
-const mascotFrames = [
-  "mascot-happy",
-  "mascot-thumbs",
-  "mascot-shy",
-  "mascot-pray",
-  "mascot-sleepy",
-  "mascot-sad",
-  "mascot-angry",
-  "mascot-run",
-];
-
-function RoomCanvas() {
-  const { roomItems, spaceProfile } = useAppData();
+function RoomCanvas({ onSelectCharacter }) {
+  const { profile, roomItems, spaceProfile } = useAppData();
   const safeRoomItems = Array.isArray(roomItems) ? roomItems : [];
   const equippedCount = safeRoomItems.filter((item) => item.equipped).length;
+  const selectedCharacter = getCharacterById(profile.characterId);
 
   return (
     <section className="room-card room-card--photo main-room-card" aria-label="나의 루틴 방">
       <div className="room-card__top">
         <div>
-          <Tag tone="main">루틴 방</Tag>
+          <Tag tone="main">{selectedCharacter.name}</Tag>
           <h2>나의 루틴 방</h2>
           <p>{spaceProfile.ddayLabel}</p>
         </div>
         <div className="room-card__actions">
-          <button aria-label="캐릭터 간식 주기" type="button">
-            ◌
+          <button aria-label="캐릭터 선택" onClick={onSelectCharacter} title="캐릭터 선택" type="button">
+            ☺
           </button>
           <button aria-label="방 꾸미기" type="button">
             +
@@ -45,16 +37,10 @@ function RoomCanvas() {
           src="/room-reference/beige-room-reference.png"
         />
 
-        <div className={`mascot mascot--photo mascot--reference mascot--${spaceProfile.roomMood}`} aria-label={`${brand.mascotName} 캐릭터`}>
-          {mascotFrames.map((frame, index) => (
-            <img
-              alt=""
-              className={`mascot__photo mascot__photo--${index + 1}`}
-              key={frame}
-              src={`/mascot/${frame}.png`}
-            />
-          ))}
-        </div>
+        <CharacterAvatar
+          character={selectedCharacter}
+          className={`room-character room-character--${spaceProfile.roomMood}`}
+        />
       </div>
 
       <div className="room-card__bottom">

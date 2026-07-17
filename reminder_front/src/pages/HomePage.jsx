@@ -3,13 +3,13 @@ import ProgressBar from "../components/ui/ProgressBar";
 import { useAppData } from "../data/AppDataProvider";
 import { getQuestStats } from "../utils/questUtils";
 
-function HomePage({ quests }) {
+function HomePage({ onNavigate, quests }) {
   const { profile, todayStatus } = useAppData();
   const stats = getQuestStats(quests);
 
   return (
     <div className="page page--simple-home">
-      <RoomCanvas />
+      <RoomCanvas onSelectCharacter={() => onNavigate("characters")} />
 
       <section className="home-status-strip" aria-label="오늘 요약">
         <div>

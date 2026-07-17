@@ -1,5 +1,6 @@
 export const navItems = [
   { id: "home", label: "나의 방", shortLabel: "방", icon: "⌂" },
+  { id: "characters", label: "캐릭터", shortLabel: "친구", icon: "☺" },
   { id: "quests", label: "오늘 퀘스트", shortLabel: "퀘스트", icon: "✓" },
   { id: "checkin", label: "체크인", shortLabel: "체크", icon: "◐" },
   { id: "quest", label: "퀘스트 상세", shortLabel: "상세", icon: "◇" },
@@ -18,6 +19,7 @@ export const onboardingSteps = [
 
 export const userProfile = {
   name: "지우",
+  characterId: "cream-bunny",
   className: "Scholar",
   classLabel: "Scholar",
   targetGoal: "토익 루틴 회복",

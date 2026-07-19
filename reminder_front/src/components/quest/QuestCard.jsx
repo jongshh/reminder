@@ -11,7 +11,7 @@ function QuestCard({ onOpen, onToggle, quest }) {
         {quest.visual}
       </div>
       <div className="quest-card__topline">
-        <QuestTypeBadge type={quest.type} />
+        {quest.recoveryAdjusted ? <Tag tone="recovery">AI 완화</Tag> : <QuestTypeBadge type={quest.type} />}
         <span>{quest.time}</span>
       </div>
       <h3>{quest.title}</h3>
@@ -19,7 +19,7 @@ function QuestCard({ onOpen, onToggle, quest }) {
       <div className="quest-card__meta">
         <Tag>{quest.category}</Tag>
         <Tag tone="warning">{quest.difficulty}</Tag>
-        <Tag tone="success">+{quest.xp} XP</Tag>
+        <Tag tone="success">방 반짝임 +{quest.xp}</Tag>
       </div>
       <div className="quest-card__actions">
         <QuestCompleteButton completed={quest.completed} onToggle={() => onToggle(quest.id)} />

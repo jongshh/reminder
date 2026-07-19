@@ -12,14 +12,14 @@ function WeeklyReportPage() {
 
   return (
     <div className="page">
-      <SectionTitle description="성공률과 패턴" eyebrow="주간 리포트" title="주간" />
+      <SectionTitle description="잘한 날보다 다시 돌아온 순간을 먼저 봐요" eyebrow="MY RHYTHM" title="나의 리듬" />
       <div className="report-grid">
         <WeeklySummaryCard report={weeklyReport} />
         <CompletionRateCard report={weeklyReport} />
         <Card className="stat-card">
-          <Tag tone="success">최적</Tag>
-          <strong>{weeklyReport.bestTimeSlot}</strong>
-          <span>집중 시간</span>
+          <Tag tone="success">돌아온 날</Tag>
+          <strong>{weeklyReport.comebackCount}일</strong>
+          <span>쉬어간 뒤 다시 시작</span>
         </Card>
         <Card className="stat-card stat-card--recovery">
           <Tag tone="recovery">회복</Tag>

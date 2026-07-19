@@ -19,8 +19,8 @@ function Header({ currentLabel, onNavigate }) {
         title="설정"
         type="button"
       >
-        <Tag tone="success">{profile.className}</Tag>
-        <span>Lv.{profile.level}</span>
+        <Tag tone="success">회복력 {profile.recoveryRate}%</Tag>
+        <span>↺ {profile.comebackCount}</span>
       </button>
     </header>
   );

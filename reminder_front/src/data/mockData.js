@@ -1,13 +1,9 @@
 export const navItems = [
-  { id: "home", label: "나의 방", shortLabel: "방", icon: "⌂" },
-  { id: "characters", label: "캐릭터", shortLabel: "친구", icon: "☺" },
-  { id: "quests", label: "오늘 퀘스트", shortLabel: "퀘스트", icon: "✓" },
-  { id: "checkin", label: "체크인", shortLabel: "체크", icon: "◐" },
-  { id: "quest", label: "퀘스트 상세", shortLabel: "상세", icon: "◇" },
-  { id: "report", label: "주간 리포트", shortLabel: "주간", icon: "▣" },
-  { id: "profile", label: "성장 기록", shortLabel: "성장", icon: "☆" },
-  { id: "settings", label: "계정 설정", shortLabel: "설정", icon: "⚙" },
-  { id: "onboarding", label: "시작 설정", shortLabel: "시작", icon: "◎" },
+  { id: "home", label: "스튜디오", shortLabel: "스튜디오", icon: "⌂" },
+  { id: "quests", label: "오늘 할 일", shortLabel: "오늘", icon: "✓" },
+  { id: "checkin", label: "컨디션", shortLabel: "컨디션", icon: "◐" },
+  { id: "report", label: "리듬", shortLabel: "리듬", icon: "▣" },
+  { id: "profile", label: "회복 기록", shortLabel: "회복", icon: "↺" },
 ];
 
 export const onboardingSteps = [
@@ -29,10 +25,13 @@ export const userProfile = {
   streak: 5,
   recoveryTokens: 2,
   recoveryRate: 76,
+  comebackCount: 8,
+  lastBreakDays: 2,
+  resilienceLevel: 4,
   badges: [
     { id: "first-week", label: "첫 주", tone: "success" },
     { id: "morning-check", label: "AM 3회", tone: "warning" },
-    { id: "recovery", label: "복구", tone: "recovery" },
+    { id: "recovery", label: "다시 시작 8회", tone: "recovery" },
   ],
 };
 
@@ -61,6 +60,9 @@ export const todayStatus = {
   completionTarget: "3개만 끝내기",
   checkinProgress: 1,
   checkinTotal: 2,
+  planMode: "balanced",
+  aiPlanApplied: false,
+  quickCheckin: null,
 };
 
 export const coachMessage = {
@@ -70,9 +72,9 @@ export const coachMessage = {
 };
 
 export const difficultySuggestion = {
-  title: "내일은 쉬움",
-  message: "시간 부족이면 메인 1개를 미니로 낮춰요.",
-  recommendedLevel: "보통 → 쉬움",
+  title: "오늘은 라이트 모드가 좋아요",
+  message: "완료하지 않아도 괜찮아요. 가장 작은 메인 1개를 10분짜리 미니로 바꿔드릴게요.",
+  recommendedLevel: "AI 루틴 완화",
 };
 
 export const todayQuests = [
@@ -132,7 +134,7 @@ export const todayQuests = [
     completed: false,
     visual: "10",
     color: "violet",
-    description: "스트릭 유지",
+    description: "다시 시작하는 가장 작은 행동",
     recoveryAction: "첫 페이지만 보기",
     steps: ["열기", "10개"],
   },
@@ -169,12 +171,13 @@ export const checkinOptions = {
 export const failureReasonOptions = ["시간", "집중", "감정", "몸", "과다", "환경"];
 
 export const weeklyReport = {
-  summary: "오전 성공률이 높아요. 저녁은 복구 루틴으로 낮춥니다.",
+  summary: "이번 주에는 흐름이 끊긴 뒤 네 번이나 다시 돌아왔어요. 저녁은 더 가볍게 조정할게요.",
   completionRate: 68,
   completedCount: 17,
   totalCount: 25,
   bestTimeSlot: "09-11",
   recoveryRate: 76,
+  comebackCount: 4,
   days: [
     { day: "월", rate: 80 },
     { day: "화", rate: 60 },

@@ -100,6 +100,68 @@ export function AppDataProvider({ children }) {
     }));
   };
 
+  const updateTodayStatus = (updates) => {
+    setAppData((currentData) => ({
+      ...currentData,
+      todayStatus: {
+        ...currentData.todayStatus,
+        ...(typeof updates === "function" ? updates(currentData.todayStatus) : updates),
+      },
+    }));
+  };
+
+  const applyRecoveryPlan = () => {
+    setAppData((currentData) => {
+      if (currentData.todayStatus?.aiPlanApplied) {
+        return currentData;
+      }
+
+      let adjusted = false;
+      const quests = currentData.quests.map((quest) => {
+        if (adjusted || quest.completed || quest.type !== "main") {
+          return quest;
+        }
+
+        adjusted = true;
+        return {
+          ...quest,
+          type: "mini",
+          title: quest.title.replace("20분", "10분").replace("20개", "10개").replace("5분", "2분"),
+          difficulty: "매우 쉬움",
+          description: "AI가 가볍게 줄인 복귀 퀘스트",
+          xp: Math.max(12, Math.round(quest.xp * 0.65)),
+          recoveryAdjusted: true,
+        };
+      });
+
+      return {
+        ...currentData,
+        quests,
+        coachMessage: {
+          ...currentData.coachMessage,
+          title: "라이트 모드 적용 완료",
+          message: "오늘은 이만큼이면 충분해요",
+          adjustment: "메인 1개 → 미니",
+        },
+        todayStatus: {
+          ...currentData.todayStatus,
+          aiPlanApplied: true,
+          completionTarget: "오늘은 1개면 충분해요",
+          planMode: "recovery",
+        },
+      };
+    });
+  };
+
+  const toggleRoomItem = (itemId) => {
+    setAppData((currentData) => ({
+      ...currentData,
+      roomItems: currentData.roomItems.map((item) =>
+        item.id === itemId && item.owned ? { ...item, equipped: !item.equipped } : item,
+      ),
+    }));
+  };
+
   const updateProfile = (updates) => {
     setAppData((currentData) => ({
       ...currentData,
@@ -125,11 +187,14 @@ export function AppDataProvider({ children }) {
     () => ({
       ...appData,
       capabilities: getCapabilities(session),
+      applyRecoveryPlan,
       dataError,
       deleteMemberData,
       isDataReady,
       resetGuestData,
       setQuests,
+      toggleRoomItem,
+      updateTodayStatus,
       updateProfile,
     }),
     [appData, dataError, isDataReady, session],

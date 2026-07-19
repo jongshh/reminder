@@ -78,10 +78,24 @@ const mergeWithDefaultData = (data, profileSeed) => {
   return {
     ...initialData,
     ...data,
+    coachMessage: {
+      ...initialData.coachMessage,
+      ...data.coachMessage,
+    },
+    difficultySuggestion: {
+      ...initialData.difficultySuggestion,
+      ...data.difficultySuggestion,
+    },
     profile: {
       ...initialData.profile,
       ...data.profile,
     },
+    navItems: initialData.navItems,
+    quests: (data.quests ?? initialData.quests).map((quest) =>
+      quest.description === "스트릭 유지"
+        ? { ...quest, description: "다시 시작하는 가장 작은 행동" }
+        : quest,
+    ),
     spaceProfile: {
       ...initialData.spaceProfile,
       ...data.spaceProfile,
@@ -89,6 +103,10 @@ const mergeWithDefaultData = (data, profileSeed) => {
     checkinOptions: {
       ...initialData.checkinOptions,
       ...data.checkinOptions,
+    },
+    todayStatus: {
+      ...initialData.todayStatus,
+      ...data.todayStatus,
     },
     weeklyReport: {
       ...initialData.weeklyReport,

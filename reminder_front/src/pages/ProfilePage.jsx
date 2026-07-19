@@ -1,7 +1,7 @@
 import BadgeList from "../components/growth/BadgeList";
 import LevelCard from "../components/growth/LevelCard";
 import RecoveryTokenCard from "../components/growth/RecoveryTokenCard";
-import StreakBadge from "../components/growth/StreakBadge";
+import ResilienceCard from "../components/growth/ResilienceCard";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import SectionTitle from "../components/ui/SectionTitle";
@@ -13,12 +13,12 @@ function ProfilePage({ onNavigate }) {
 
   return (
     <div className="page">
-      <SectionTitle description="레벨, 연속 기록, 배지" eyebrow="프로필 / 성장" title="성장" />
+      <SectionTitle description="쉬었다가 다시 시작한 모든 순간" eyebrow="RESILIENCE LOG" title="회복 기록" />
 
       <Card className="profile-card" tone="accent">
         <Tag tone="main">{profile.classLabel}</Tag>
         <h2>{profile.name}</h2>
-        <p>{profile.targetGoal}</p>
+        <p>{profile.targetGoal} · 지금까지 {profile.comebackCount}번 다시 돌아왔어요.</p>
         {!capabilities.cloudSync ? <small>게스트 데이터는 이 기기 안에만 저장됩니다.</small> : null}
         <div className="profile-card__actions">
           <Button onClick={() => onNavigate("settings")} size="sm" variant="ghost">
@@ -29,7 +29,7 @@ function ProfilePage({ onNavigate }) {
 
       <section className="insight-grid">
         <LevelCard profile={profile} />
-        <StreakBadge streak={profile.streak} />
+        <ResilienceCard comebackCount={profile.comebackCount} recoveryRate={profile.recoveryRate} />
         <RecoveryTokenCard count={profile.recoveryTokens} recoveryRate={profile.recoveryRate} />
       </section>
 

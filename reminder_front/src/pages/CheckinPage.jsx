@@ -6,9 +6,9 @@ function CheckinPage() {
   return (
     <div className="page">
       <SectionTitle
-        description="30초 입력"
-        eyebrow="AM / PM Check-in"
-        title="체크"
+        description="대답 하나면 충분해요. 저장 버튼 없이 바로 반영됩니다."
+        eyebrow="ONE TAP CONDITION"
+        title="오늘의 컨디션"
       />
       <div className="checkin-layout">
         <CheckinForm />

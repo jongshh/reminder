@@ -18,13 +18,13 @@ import WeeklyReportPage from "./pages/WeeklyReportPage";
 import { getQuestById } from "./utils/questUtils";
 
 const navigationMeta = {
-  home: { icon: "◒", label: "스튜디오", shortLabel: "작업방" },
+  home: { icon: "⌂", label: "스튜디오", shortLabel: "스튜디오" },
   characters: { icon: "☺", label: "캐릭터", shortLabel: "친구" },
   quests: { icon: "✓", label: "오늘 할 일", shortLabel: "할 일" },
   checkin: { icon: "◐", label: "컨디션", shortLabel: "체크" },
   quest: { icon: "◇", label: "루틴 상세", shortLabel: "상세" },
-  report: { icon: "▣", label: "주간 기록", shortLabel: "기록" },
-  profile: { icon: "☆", label: "성장 로그", shortLabel: "성장" },
+  report: { icon: "▣", label: "나의 리듬", shortLabel: "리듬" },
+  profile: { icon: "↺", label: "회복 기록", shortLabel: "회복" },
   settings: { icon: "⚙", label: "설정", shortLabel: "설정" },
   onboarding: { icon: "◎", label: "시작 설정", shortLabel: "시작" },
 };
@@ -33,6 +33,7 @@ function AuthenticatedApp() {
   const { dataError, isDataReady, navItems, quests, setQuests } = useAppData();
   const [activePage, setActivePage] = useState("home");
   const [selectedQuestId, setSelectedQuestId] = useState(quests[0]?.id);
+  const [rewardEvent, setRewardEvent] = useState(null);
 
   const displayNavItems = useMemo(
     () => navItems.map((item) => ({ ...item, ...navigationMeta[item.id] })),
@@ -42,11 +43,20 @@ function AuthenticatedApp() {
   const selectedQuest = useMemo(() => getQuestById(quests, selectedQuestId), [quests, selectedQuestId]);
 
   const handleToggleQuest = (questId) => {
+    const targetQuest = quests.find((quest) => quest.id === questId);
     setQuests((currentQuests) =>
       currentQuests.map((quest) =>
         quest.id === questId ? { ...quest, completed: !quest.completed } : quest,
       ),
     );
+
+    if (targetQuest && !targetQuest.completed) {
+      const event = { id: Date.now(), title: targetQuest.title, xp: targetQuest.xp };
+      setRewardEvent(event);
+      window.setTimeout(() => {
+        setRewardEvent((current) => (current?.id === event.id ? null : current));
+      }, 2400);
+    }
   };
 
   const handleOpenQuest = (questId) => {
@@ -67,7 +77,14 @@ function AuthenticatedApp() {
       case "characters":
         return <CharacterPage />;
       case "quests":
-        return <QuestPage onOpenQuest={handleOpenQuest} onToggleQuest={handleToggleQuest} quests={quests} />;
+        return (
+          <QuestPage
+            onOpenQuest={handleOpenQuest}
+            onToggleQuest={handleToggleQuest}
+            quests={quests}
+            rewardEvent={rewardEvent}
+          />
+        );
       case "quest":
         return <QuestDetailPage onToggleQuest={handleToggleQuest} quest={selectedQuest} />;
       case "report":
@@ -84,6 +101,7 @@ function AuthenticatedApp() {
             onOpenQuest={handleOpenQuest}
             onToggleQuest={handleToggleQuest}
             quests={quests}
+            rewardEvent={rewardEvent}
           />
         );
     }
@@ -98,6 +116,15 @@ function AuthenticatedApp() {
     >
       {dataError ? <p className="form-error">데이터 동기화 오류: {dataError}</p> : null}
       {renderPage()}
+      {rewardEvent ? (
+        <div className="reward-toast" role="status">
+          <span aria-hidden="true">✦</span>
+          <div>
+            <strong>방이 한층 더 반짝여요!</strong>
+            <small>{rewardEvent.title} · +{rewardEvent.xp} XP</small>
+          </div>
+        </div>
+      ) : null}
     </AppLayout>
   );
 }

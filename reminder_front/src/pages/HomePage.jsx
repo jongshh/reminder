@@ -10,14 +10,23 @@ function HomePage({ onNavigate, onOpenQuest, onToggleQuest, quests, rewardEvent 
   const { profile, todayStatus } = useAppData();
   const stats = getQuestStats(quests);
   const nextQuests = quests.filter((quest) => !quest.completed).slice(0, 3);
+  const comebackCount = Number(profile.comebackCount) || 0;
+  const lastBreakDays = Number(profile.lastBreakDays) || 0;
+  const isReturning = comebackCount > 0 || lastBreakDays > 0;
 
   return (
     <div className="page recovery-home">
       <section className="comeback-hero">
         <div className="comeback-hero__copy">
-          <span className="comeback-hero__eyebrow">WELCOME BACK · DAY {profile.comebackCount}</span>
-          <h2>다시 와줘서 정말 반가워요, {profile.name}님.</h2>
-          <p>{profile.lastBreakDays}일의 빈칸은 실패가 아니에요. 오늘 돌아온 선택이 새로운 기록이에요.</p>
+          <span className="comeback-hero__eyebrow">
+            {isReturning ? `WELCOME BACK · RETURN ${comebackCount}` : "WELCOME · YOUR FIRST SOFT LANDING"}
+          </span>
+          <h2>{isReturning ? "다시 와줘서 정말 반가워요" : "처음 만나서 반가워요"}, {profile.name}님.</h2>
+          <p>
+            {isReturning
+              ? `${lastBreakDays > 0 ? `${lastBreakDays}일의` : "잠깐의"} 빈칸은 실패가 아니에요. 오늘 돌아온 선택이 새로운 기록이에요.`
+              : "오늘은 가장 작은 행동 하나로 시작해요. 쉬어가도 언제든 다시 환영할게요."}
+          </p>
           <div className="comeback-hero__actions">
             <Button onClick={() => onNavigate("quests")}>가장 작은 루틴 시작</Button>
             <button className="text-button" onClick={() => onNavigate("checkin")} type="button">
@@ -49,7 +58,7 @@ function HomePage({ onNavigate, onOpenQuest, onToggleQuest, quests, rewardEvent 
               <strong>{profile.recoveryRate}</strong><span>%</span>
             </div>
             <p>쉬어간 뒤 48시간 안에 다시 돌아온 비율이에요.</p>
-            <ProgressBar label={`${profile.comebackCount}번 다시 시작`} value={profile.recoveryRate} />
+            <ProgressBar label={`${comebackCount}번 다시 시작`} value={profile.recoveryRate} />
             <div className="resilience-meter-card__tokens">
               <span aria-hidden="true">↺</span>
               <div><strong>{profile.recoveryTokens}개</strong><small>사용 가능한 리커버리 토큰</small></div>

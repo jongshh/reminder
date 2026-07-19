@@ -7,7 +7,7 @@ import Tag from "../components/ui/Tag";
 import { useAppData } from "../data/AppDataProvider";
 import { getQuestStats } from "../utils/questUtils";
 
-function QuestPage({ onOpenQuest, onToggleQuest, quests, rewardEvent }) {
+function QuestPage({ onOpenQuest, onToggleQuest, quests = [], rewardEvent }) {
   const { profile, todayStatus } = useAppData();
   const stats = getQuestStats(quests);
 

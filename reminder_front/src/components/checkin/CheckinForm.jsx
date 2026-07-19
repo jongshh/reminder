@@ -9,20 +9,20 @@ import FailureReasonTags from "./FailureReasonTags";
 import TodayFocusInput from "./TodayFocusInput";
 
 const quickOptions = [
-  { value: "empty", emoji: "◔", label: "방전", message: "오늘은 쉬어가기" },
-  { value: "tired", emoji: "☁", label: "지침", message: "10분으로 낮추기" },
-  { value: "okay", emoji: "◐", label: "괜찮음", message: "하나만 가볍게" },
-  { value: "good", emoji: "☀", label: "좋음", message: "지금 페이스 유지" },
+  { value: "empty", energyLevel: "low", emoji: "◔", label: "방전", message: "오늘은 쉬어가기" },
+  { value: "tired", energyLevel: "low", emoji: "☁", label: "지침", message: "10분으로 낮추기" },
+  { value: "okay", energyLevel: "normal", emoji: "◐", label: "괜찮음", message: "하나만 가볍게" },
+  { value: "good", energyLevel: "high", emoji: "☀", label: "좋음", message: "지금 페이스 유지" },
 ];
 
 function CheckinForm() {
-  const { checkinOptions, failureReasonOptions, todayStatus, updateTodayStatus } = useAppData();
+  const { checkinOptions, failureReasonOptions, saveCheckin, saveQuickCheckin, todayStatus } = useAppData();
   const [mode, setMode] = useState("am");
-  const [energy, setEnergy] = useState("normal");
+  const [energyLevel, setEnergyLevel] = useState("normal");
   const [busyLevel, setBusyLevel] = useState("normal");
-  const [focus, setFocus] = useState(todayStatus.primaryFocus);
+  const [primaryFocus, setPrimaryFocus] = useState(todayStatus.primaryFocus);
   const [completedToday, setCompletedToday] = useState(false);
-  const [failureReasons, setFailureReasons] = useState(["시간"]);
+  const [failureReasons, setFailureReasons] = useState(["시간 부족"]);
   const [submitted, setSubmitted] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [quickChoice, setQuickChoice] = useState(todayStatus.quickCheckin?.value ?? "");
@@ -37,28 +37,26 @@ function CheckinForm() {
 
   const handleQuickCheckin = (option) => {
     setQuickChoice(option.value);
-    setEnergy(option.value === "good" ? "high" : option.value === "okay" ? "normal" : "low");
-    updateTodayStatus((current) => ({
-      ...current,
-      condition: option.label,
-      checkinProgress: current.checkinTotal,
-      quickCheckin: {
-        value: option.value,
-        label: option.label,
-        recordedAt: new Date().toISOString(),
-      },
-    }));
+    setEnergyLevel(option.energyLevel);
+    saveQuickCheckin({
+      busyLevel: option.value === "empty" || option.value === "tired" ? "busy" : "normal",
+      energyLevel: option.energyLevel,
+      label: option.label,
+      primaryFocus,
+      value: option.value,
+    });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    saveCheckin(mode, {
+      energyLevel,
+      busyLevel,
+      primaryFocus,
+      completedToday: mode === "pm" ? completedToday : false,
+      failureReasons: mode === "pm" && !completedToday ? failureReasons : [],
+    });
     setSubmitted(true);
-    updateTodayStatus((current) => ({
-      ...current,
-      condition: checkinOptions.energyLevels.find((option) => option.value === energy)?.label ?? current.condition,
-      primaryFocus: focus,
-      checkinProgress: current.checkinTotal,
-    }));
   };
 
   return (
@@ -67,7 +65,7 @@ function CheckinForm() {
         <div>
           <Tag tone="success">3초 체크인</Tag>
           <h2>지금, 몸과 마음은 어때요?</h2>
-          <p>한 번만 누르면 바로 기록돼요. 설명은 필요 없어요.</p>
+          <p>한 번만 누르면 오늘 AM 기록으로 바로 저장돼요. 설명은 필요 없어요.</p>
         </div>
         {quickChoice ? <span className="auto-save-state">✓ 자동 저장됨</span> : null}
       </div>
@@ -103,7 +101,7 @@ function CheckinForm() {
         onClick={() => setShowDetails((current) => !current)}
         type="button"
       >
-        <span>{showDetails ? "상세 체크인 접기" : "조금 더 자세히 기록하기 (선택)"}</span>
+        <span>{showDetails ? "상세 체크인 접기" : "AM·PM을 조금 더 자세히 기록하기 (선택)"}</span>
         <b>{showDetails ? "−" : "+"}</b>
       </button>
 
@@ -116,9 +114,9 @@ function CheckinForm() {
 
           {mode === "am" ? (
             <>
-              <EnergyCheck onChange={setEnergy} options={checkinOptions.energyLevels} value={energy} />
+              <EnergyCheck onChange={setEnergyLevel} options={checkinOptions.energyLevels} value={energyLevel} />
               <BusyLevelSelect onChange={setBusyLevel} options={checkinOptions.busyLevels} value={busyLevel} />
-              <TodayFocusInput onChange={setFocus} value={focus} />
+              <TodayFocusInput onChange={setPrimaryFocus} value={primaryFocus} />
             </>
           ) : (
             <>
@@ -133,7 +131,7 @@ function CheckinForm() {
           )}
 
           <div className="checkin-form__footer">
-            <div><Tag tone="main">선택 기록</Tag><span>원할 때만 남겨요</span></div>
+            <div><Tag tone="main">{mode === "am" ? "계획" : "회고"}</Tag><span>날짜별로 안전하게 저장돼요</span></div>
             <Button type="submit">상세 저장</Button>
           </div>
           {submitted ? <p className="form-feedback">상세 기록도 저장했어요.</p> : null}

@@ -15,6 +15,7 @@ import {
 
 export const defaultAppData = {
   checkinOptions,
+  checkinsByDate: {},
   coachMessage,
   difficultySuggestion,
   failureReasonOptions,
@@ -22,6 +23,7 @@ export const defaultAppData = {
   onboardingSteps,
   profile: userProfile,
   quests: todayQuests,
+  questsByDate: {},
   roomItems,
   spaceProfile,
   todayStatus,

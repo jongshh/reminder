@@ -18,7 +18,7 @@ function ProfilePage({ onNavigate }) {
       <Card className="profile-card" tone="accent">
         <Tag tone="main">{profile.classLabel}</Tag>
         <h2>{profile.name}</h2>
-        <p>{profile.targetGoal} · 지금까지 {profile.comebackCount}번 다시 돌아왔어요.</p>
+        <p>{profile.targetGoal} · 지금까지 {profile.comebackCount ?? 0}번 다시 돌아왔어요.</p>
         {!capabilities.cloudSync ? <small>게스트 데이터는 이 기기 안에만 저장됩니다.</small> : null}
         <div className="profile-card__actions">
           <Button onClick={() => onNavigate("settings")} size="sm" variant="ghost">

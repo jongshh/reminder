@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
+import { getTodayKey } from "../utils/dateUtils";
+import { applyQuestToggleRules } from "../utils/routineRules";
 import { defaultAppData } from "./defaultAppData";
-import { profileRepository } from "./profileRepository";
+import { profileRepository, rebuildDerivedData } from "./profileRepository";
 
 const AppDataContext = createContext(null);
 
@@ -10,14 +12,65 @@ const getCapabilities = (session) => ({
   leaderboard: session?.mode === "member",
 });
 
-const loadDataForSession = async (session) => {
-  if (!session) {
-    return defaultAppData;
+const loadDataForSession = async (session, todayKey) => {
+  if (!session) return defaultAppData;
+  return session.mode === "guest"
+    ? profileRepository.loadGuestData(todayKey)
+    : profileRepository.loadMemberData(session, todayKey);
+};
+
+const chooseClass = ({ energyLevel, preference }) => {
+  if (energyLevel === "low" || preference === "recovery") {
+    return { className: "Keeper", classLabel: "회복을 지키는 수호자", characterId: "sage-cat" };
   }
 
-  return session.mode === "guest"
-    ? profileRepository.loadGuestData()
-    : profileRepository.loadMemberData(session);
+  if (preference === "challenge") {
+    return { className: "Challenger", classLabel: "도전을 즐기는 실행가", characterId: "sunny-penguin" };
+  }
+
+  return { className: "Scholar", classLabel: "차분한 학습가", characterId: "cream-bunny" };
+};
+
+const createOnboardingQuests = ({ targetGoal, availableMinutes }) => {
+  const minutes = Number(availableMinutes) || 25;
+  const mainMinutes = Math.min(45, Math.max(10, minutes));
+
+  return [
+    {
+      id: "main-focus",
+      type: "main",
+      title: `${targetGoal || "목표"} ${mainMinutes}분`,
+      category: "핵심",
+      time: "오늘",
+      scheduledTime: "오늘",
+      difficulty: minutes < 20 ? "쉬움" : "보통",
+      xp: minutes < 20 ? 25 : 45,
+      completed: false,
+      completedAt: null,
+      visual: String(mainMinutes),
+      color: "teal",
+      description: "오늘 가장 중요한 루틴을 작게 실행합니다.",
+      recoveryAction: "5분만 다시 시작하기",
+      steps: ["시작 준비", `${mainMinutes}분 실행`, "완료 기록"],
+    },
+    {
+      id: "mini-restart",
+      type: "mini",
+      title: "5분 재시작",
+      category: "회복",
+      time: "언제든",
+      scheduledTime: "언제든",
+      difficulty: "매우 쉬움",
+      xp: 10,
+      completed: false,
+      completedAt: null,
+      visual: "5",
+      color: "blue",
+      description: "흐름이 끊겼을 때 다시 켜는 미니 루틴입니다.",
+      recoveryAction: "1분만 하기",
+      steps: ["앉기", "5분 실행"],
+    },
+  ];
 };
 
 export function AppDataProvider({ children }) {
@@ -25,7 +78,18 @@ export function AppDataProvider({ children }) {
   const saveTimerRef = useRef(null);
   const [appData, setAppData] = useState(defaultAppData);
   const [dataError, setDataError] = useState("");
-  const [isDataReady, setIsDataReady] = useState(Boolean(session));
+  const [isDataReady, setIsDataReady] = useState(false);
+  const todayKey = getTodayKey();
+
+  const persistData = async (nextData) => {
+    if (!session) return;
+
+    if (session.mode === "guest") {
+      profileRepository.saveGuestData(nextData);
+    } else {
+      await profileRepository.saveMemberData(session, nextData, todayKey);
+    }
+  };
 
   useEffect(() => {
     let isCurrent = true;
@@ -41,8 +105,7 @@ export function AppDataProvider({ children }) {
       setDataError("");
 
       try {
-        const nextData = await loadDataForSession(session);
-
+        const nextData = await loadDataForSession(session, todayKey);
         if (isCurrent) {
           setAppData(nextData);
           setIsDataReady(true);
@@ -61,25 +124,16 @@ export function AppDataProvider({ children }) {
     return () => {
       isCurrent = false;
     };
-  }, [session]);
+  }, [session, todayKey]);
 
   useEffect(() => {
-    if (!session || !isDataReady) {
-      return undefined;
-    }
+    if (!session || !isDataReady) return undefined;
 
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-    }
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
 
     saveTimerRef.current = setTimeout(async () => {
       try {
-        if (session.mode === "guest") {
-          profileRepository.saveGuestData(appData);
-        } else {
-          await profileRepository.saveMemberData(session, appData);
-        }
-
+        await persistData(appData);
         setDataError("");
       } catch (error) {
         setDataError(error.message);
@@ -87,21 +141,141 @@ export function AppDataProvider({ children }) {
     }, 350);
 
     return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
   }, [appData, isDataReady, session]);
 
+  const updateAndPersist = (updater) => {
+    setAppData((currentData) => {
+      const nextData = rebuildDerivedData(typeof updater === "function" ? updater(currentData) : updater, todayKey);
+      persistData(nextData).catch((error) => setDataError(error.message));
+      return nextData;
+    });
+  };
+
   const setQuests = (updater) => {
-    setAppData((currentData) => ({
+    updateAndPersist((currentData) => {
+      const quests = typeof updater === "function" ? updater(currentData.quests) : updater;
+      return {
+        ...currentData,
+        quests,
+        questsByDate: {
+          ...(currentData.questsByDate ?? {}),
+          [todayKey]: quests,
+        },
+      };
+    });
+  };
+
+  const toggleQuest = (questId) => {
+    updateAndPersist((currentData) => {
+      const quest = currentData.quests.find((currentQuest) => currentQuest.id === questId);
+      if (!quest) return currentData;
+
+      const { nextProfile, nextQuests } = applyQuestToggleRules({
+        profile: currentData.profile,
+        quest,
+        quests: currentData.quests,
+        todayKey,
+      });
+
+      return {
+        ...currentData,
+        profile: nextProfile,
+        quests: nextQuests,
+        questsByDate: {
+          ...(currentData.questsByDate ?? {}),
+          [todayKey]: nextQuests,
+        },
+        spaceProfile: {
+          ...currentData.spaceProfile,
+          currency: nextProfile.xp,
+          ddayLabel: `루틴 ${nextProfile.streak}일째`,
+        },
+      };
+    });
+  };
+
+  const saveCheckin = (period, payload) => {
+    updateAndPersist((currentData) => ({
       ...currentData,
-      quests: typeof updater === "function" ? updater(currentData.quests) : updater,
+      checkinsByDate: {
+        ...(currentData.checkinsByDate ?? {}),
+        [todayKey]: {
+          ...(currentData.checkinsByDate?.[todayKey] ?? {}),
+          [period]: {
+            period,
+            ...payload,
+          },
+        },
+      },
+      todayStatus: {
+        ...currentData.todayStatus,
+        quickCheckin: null,
+      },
+    }));
+  };
+
+  const saveQuickCheckin = ({ busyLevel, energyLevel, label, primaryFocus, value }) => {
+    updateAndPersist((currentData) => ({
+      ...currentData,
+      checkinsByDate: {
+        ...(currentData.checkinsByDate ?? {}),
+        [todayKey]: {
+          ...(currentData.checkinsByDate?.[todayKey] ?? {}),
+          am: {
+            period: "am",
+            energyLevel,
+            busyLevel,
+            primaryFocus,
+            completedToday: false,
+            failureReasons: [],
+          },
+        },
+      },
+      todayStatus: {
+        ...currentData.todayStatus,
+        condition: label,
+        quickCheckin: {
+          label,
+          recordedAt: new Date().toISOString(),
+          value,
+        },
+      },
+    }));
+  };
+
+  const completeOnboarding = (payload) => {
+    const classInfo = {
+      ...chooseClass(payload),
+      ...(payload.profilePatch ?? {}),
+    };
+    const quests =
+      Array.isArray(payload.generatedQuests) && payload.generatedQuests.length > 0
+        ? payload.generatedQuests
+        : createOnboardingQuests(payload);
+
+    updateAndPersist((currentData) => ({
+      ...currentData,
+      profile: {
+        ...currentData.profile,
+        ...classInfo,
+        targetGoal: payload.targetGoal || currentData.profile.targetGoal,
+      },
+      quests,
+      questsByDate: {
+        ...(currentData.questsByDate ?? {}),
+        [todayKey]: quests,
+      },
+      spaceProfile: {
+        ...currentData.spaceProfile,
+        todayQuestion: payload.targetGoal || currentData.spaceProfile.todayQuestion,
+      },
     }));
   };
 
   const updateTodayStatus = (updates) => {
-    setAppData((currentData) => ({
+    updateAndPersist((currentData) => ({
       ...currentData,
       todayStatus: {
         ...currentData.todayStatus,
@@ -111,9 +285,21 @@ export function AppDataProvider({ children }) {
   };
 
   const applyRecoveryPlan = () => {
-    setAppData((currentData) => {
+    updateAndPersist((currentData) => {
       if (currentData.todayStatus?.aiPlanApplied) {
         return currentData;
+      }
+
+      if (currentData.quests.some((quest) => quest.recoveryAdjusted)) {
+        return {
+          ...currentData,
+          todayStatus: {
+            ...currentData.todayStatus,
+            aiPlanApplied: true,
+            completionTarget: "오늘은 1개면 충분해요",
+            planMode: "recovery",
+          },
+        };
       }
 
       let adjusted = false;
@@ -123,20 +309,31 @@ export function AppDataProvider({ children }) {
         }
 
         adjusted = true;
+        const reducedTitle = /\d+\s*분/.test(quest.title)
+          ? quest.title.replace(/\d+\s*분/, "10분")
+          : /\d+\s*개/.test(quest.title)
+            ? quest.title.replace(/\d+\s*개/, "10개")
+            : `${quest.title} · 5분`;
+
         return {
           ...quest,
           type: "mini",
-          title: quest.title.replace("20분", "10분").replace("20개", "10개").replace("5분", "2분"),
+          title: reducedTitle,
           difficulty: "매우 쉬움",
           description: "AI가 가볍게 줄인 복귀 퀘스트",
           xp: Math.max(12, Math.round(quest.xp * 0.65)),
           recoveryAdjusted: true,
+          visual: /개/.test(reducedTitle) ? "10" : /10분/.test(reducedTitle) ? "10" : "5",
         };
       });
 
       return {
         ...currentData,
         quests,
+        questsByDate: {
+          ...(currentData.questsByDate ?? {}),
+          [todayKey]: quests,
+        },
         coachMessage: {
           ...currentData.coachMessage,
           title: "라이트 모드 적용 완료",
@@ -154,7 +351,7 @@ export function AppDataProvider({ children }) {
   };
 
   const toggleRoomItem = (itemId) => {
-    setAppData((currentData) => ({
+    updateAndPersist((currentData) => ({
       ...currentData,
       roomItems: currentData.roomItems.map((item) =>
         item.id === itemId && item.owned ? { ...item, equipped: !item.equipped } : item,
@@ -163,7 +360,7 @@ export function AppDataProvider({ children }) {
   };
 
   const updateProfile = (updates) => {
-    setAppData((currentData) => ({
+    updateAndPersist((currentData) => ({
       ...currentData,
       profile: {
         ...currentData.profile,
@@ -172,9 +369,14 @@ export function AppDataProvider({ children }) {
     }));
   };
 
+  const loadTodayData = async (dateKey = todayKey) => {
+    const nextData = await loadDataForSession(session, dateKey);
+    setAppData(nextData);
+  };
+
   const resetGuestData = async () => {
     profileRepository.deleteGuestData();
-    setAppData(await loadDataForSession(session));
+    setAppData(await loadDataForSession(session, todayKey));
   };
 
   const deleteMemberData = async () => {
@@ -188,12 +390,17 @@ export function AppDataProvider({ children }) {
       ...appData,
       capabilities: getCapabilities(session),
       applyRecoveryPlan,
+      completeOnboarding,
       dataError,
       deleteMemberData,
       isDataReady,
+      loadTodayData,
       resetGuestData,
+      saveCheckin,
+      saveQuickCheckin,
       setQuests,
       toggleRoomItem,
+      toggleQuest,
       updateTodayStatus,
       updateProfile,
     }),
@@ -205,10 +412,6 @@ export function AppDataProvider({ children }) {
 
 export function useAppData() {
   const value = useContext(AppDataContext);
-
-  if (!value) {
-    throw new Error("useAppData must be used within AppDataProvider");
-  }
-
+  if (!value) throw new Error("useAppData must be used within AppDataProvider");
   return value;
 }

@@ -3,7 +3,7 @@ import ProgressBar from "../ui/ProgressBar";
 import SectionTitle from "../ui/SectionTitle";
 import QuestList from "./QuestList";
 
-function QuestBoard({ onOpenQuest, onToggleQuest, quests }) {
+function QuestBoard({ onOpenQuest, onToggleQuest, quests = [] }) {
   const mainQuests = getQuestsByType(quests, "main");
   const miniQuests = getQuestsByType(quests, "mini");
   const stats = getQuestStats(quests);

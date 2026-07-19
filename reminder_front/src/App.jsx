@@ -30,7 +30,7 @@ const navigationMeta = {
 };
 
 function AuthenticatedApp() {
-  const { dataError, isDataReady, navItems, quests, setQuests } = useAppData();
+  const { dataError, isDataReady, navItems, quests, toggleQuest } = useAppData();
   const [activePage, setActivePage] = useState("home");
   const [selectedQuestId, setSelectedQuestId] = useState(quests[0]?.id);
   const [rewardEvent, setRewardEvent] = useState(null);
@@ -44,11 +44,7 @@ function AuthenticatedApp() {
 
   const handleToggleQuest = (questId) => {
     const targetQuest = quests.find((quest) => quest.id === questId);
-    setQuests((currentQuests) =>
-      currentQuests.map((quest) =>
-        quest.id === questId ? { ...quest, completed: !quest.completed } : quest,
-      ),
-    );
+    toggleQuest(questId);
 
     if (targetQuest && !targetQuest.completed) {
       const event = { id: Date.now(), title: targetQuest.title, xp: targetQuest.xp };
@@ -58,16 +54,13 @@ function AuthenticatedApp() {
       }, 2400);
     }
   };
-
   const handleOpenQuest = (questId) => {
     setSelectedQuestId(questId);
     setActivePage("quest");
   };
 
   const renderPage = () => {
-    if (!isDataReady) {
-      return <AuthLoadingPage />;
-    }
+    if (!isDataReady) return <AuthLoadingPage />;
 
     switch (activePage) {
       case "onboarding":
@@ -86,7 +79,7 @@ function AuthenticatedApp() {
           />
         );
       case "quest":
-        return <QuestDetailPage onToggleQuest={handleToggleQuest} quest={selectedQuest} />;
+        return <QuestDetailPage onToggleQuest={toggleQuest} quest={selectedQuest} />;
       case "report":
         return <WeeklyReportPage />;
       case "profile":
@@ -108,12 +101,7 @@ function AuthenticatedApp() {
   };
 
   return (
-    <AppLayout
-      activePage={activePage}
-      currentLabel={currentLabel}
-      navItems={displayNavItems}
-      onNavigate={setActivePage}
-    >
+    <AppLayout activePage={activePage} currentLabel={currentLabel} navItems={displayNavItems} onNavigate={setActivePage}>
       {dataError ? <p className="form-error">데이터 동기화 오류: {dataError}</p> : null}
       {renderPage()}
       {rewardEvent ? (
@@ -132,6 +120,7 @@ function AuthenticatedApp() {
 function App() {
   const {
     authError,
+    authMessage,
     clearAuthError,
     continueAsGuest,
     isAuthSubmitting,
@@ -145,8 +134,8 @@ function App() {
 
   const startAuthTransition = useCallback(async (authenticate) => {
     try {
-      await authenticate();
-      setIsTransitioning(true);
+      const result = await authenticate();
+      setIsTransitioning(!result?.pendingEmailConfirmation);
     } catch {
       setIsTransitioning(false);
     }
@@ -165,9 +154,7 @@ function App() {
     [clearAuthError],
   );
 
-  if (isRestoring) {
-    return <AuthLoadingPage />;
-  }
+  if (isRestoring) return <AuthLoadingPage />;
 
   if (!session) {
     switch (authPage) {
@@ -185,6 +172,7 @@ function App() {
           <SignupPage
             error={authError}
             isSubmitting={isAuthSubmitting}
+            message={authMessage}
             onBack={() => goToAuthPage("entry")}
             onSubmit={(details) => startAuthTransition(() => signup(details))}
           />
@@ -201,9 +189,7 @@ function App() {
     }
   }
 
-  if (isTransitioning) {
-    return <AuthLoadingPage onComplete={finishAuthTransition} />;
-  }
+  if (isTransitioning) return <AuthLoadingPage onComplete={finishAuthTransition} />;
 
   return (
     <AppDataProvider>

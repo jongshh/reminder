@@ -6,7 +6,7 @@ function CheckinPage() {
   return (
     <div className="page">
       <SectionTitle
-        description="대답 하나면 충분해요. 저장 버튼 없이 바로 반영됩니다."
+        description="한 번만 눌러도 저장되고, 원하면 AM·PM 상세 기록도 남길 수 있어요."
         eyebrow="ONE TAP CONDITION"
         title="오늘의 컨디션"
       />

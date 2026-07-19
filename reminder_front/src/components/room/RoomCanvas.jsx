@@ -29,7 +29,7 @@ function RoomCanvas({ onSelectCharacter, rewardEvent }) {
         </div>
         <div className="room-card__actions">
           <button aria-label="캐릭터 선택" onClick={onSelectCharacter} title="캐릭터 선택" type="button">
-            ☺
+            C
           </button>
           <button aria-label="방 꾸미기" onClick={() => setIsDecorating(true)} type="button">
             ✦
@@ -59,7 +59,7 @@ function RoomCanvas({ onSelectCharacter, rewardEvent }) {
           <span>오늘 방을 밝힌 순간</span>
         </div>
         <div className="room-currency">
-          <span>✦</span>
+          <span>XP</span>
           <strong>{spaceProfile.currency}</strong>
           <small>{brand.currencyName}</small>
         </div>

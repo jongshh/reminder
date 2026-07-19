@@ -12,19 +12,19 @@ function WeeklyReportPage() {
 
   return (
     <div className="page">
-      <SectionTitle description="성공률과 패턴" eyebrow="주간 리포트" title="주간" />
+      <SectionTitle description="최근 7일의 성공률과 패턴" eyebrow="Weekly Report" title="주간 리포트" />
       <div className="report-grid">
         <WeeklySummaryCard report={weeklyReport} />
         <CompletionRateCard report={weeklyReport} />
         <Card className="stat-card">
           <Tag tone="success">최적</Tag>
           <strong>{weeklyReport.bestTimeSlot}</strong>
-          <span>집중 시간</span>
+          <span>가장 안정적인 요일</span>
         </Card>
         <Card className="stat-card stat-card--recovery">
           <Tag tone="recovery">회복</Tag>
           <strong>{weeklyReport.recoveryRate}%</strong>
-          <span>48시간</span>
+          <span>회복 기록</span>
         </Card>
       </div>
       <FailurePatternList patterns={weeklyReport.patterns} />

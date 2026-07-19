@@ -12,7 +12,7 @@ function QuestCard({ onOpen, onToggle, quest }) {
       </div>
       <div className="quest-card__topline">
         <QuestTypeBadge type={quest.type} />
-        <span>{quest.time}</span>
+        <span>{quest.time || quest.scheduledTime}</span>
       </div>
       <h3>{quest.title}</h3>
       <p>{quest.description}</p>

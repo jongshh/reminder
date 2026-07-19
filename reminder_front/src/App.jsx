@@ -18,19 +18,19 @@ import WeeklyReportPage from "./pages/WeeklyReportPage";
 import { getQuestById } from "./utils/questUtils";
 
 const navigationMeta = {
-  home: { icon: "◒", label: "스튜디오", shortLabel: "작업방" },
-  characters: { icon: "☺", label: "캐릭터", shortLabel: "친구" },
-  quests: { icon: "✓", label: "오늘 할 일", shortLabel: "할 일" },
-  checkin: { icon: "◐", label: "컨디션", shortLabel: "체크" },
-  quest: { icon: "◇", label: "루틴 상세", shortLabel: "상세" },
-  report: { icon: "▣", label: "주간 기록", shortLabel: "기록" },
-  profile: { icon: "☆", label: "성장 로그", shortLabel: "성장" },
-  settings: { icon: "⚙", label: "설정", shortLabel: "설정" },
-  onboarding: { icon: "◎", label: "시작 설정", shortLabel: "시작" },
+  home: { label: "나의 루틴 방", shortLabel: "홈" },
+  characters: { label: "캐릭터", shortLabel: "친구" },
+  quests: { label: "오늘의 퀘스트", shortLabel: "퀘스트" },
+  checkin: { label: "체크인", shortLabel: "체크" },
+  quest: { label: "퀘스트 상세", shortLabel: "상세" },
+  report: { label: "주간 리포트", shortLabel: "주간" },
+  profile: { label: "성장 기록", shortLabel: "성장" },
+  settings: { label: "계정 설정", shortLabel: "설정" },
+  onboarding: { label: "시작 설정", shortLabel: "시작" },
 };
 
 function AuthenticatedApp() {
-  const { dataError, isDataReady, navItems, quests, setQuests } = useAppData();
+  const { dataError, isDataReady, navItems, quests, toggleQuest } = useAppData();
   const [activePage, setActivePage] = useState("home");
   const [selectedQuestId, setSelectedQuestId] = useState(quests[0]?.id);
 
@@ -41,23 +41,13 @@ function AuthenticatedApp() {
   const currentLabel = displayNavItems.find((item) => item.id === activePage)?.label ?? "Questlog";
   const selectedQuest = useMemo(() => getQuestById(quests, selectedQuestId), [quests, selectedQuestId]);
 
-  const handleToggleQuest = (questId) => {
-    setQuests((currentQuests) =>
-      currentQuests.map((quest) =>
-        quest.id === questId ? { ...quest, completed: !quest.completed } : quest,
-      ),
-    );
-  };
-
   const handleOpenQuest = (questId) => {
     setSelectedQuestId(questId);
     setActivePage("quest");
   };
 
   const renderPage = () => {
-    if (!isDataReady) {
-      return <AuthLoadingPage />;
-    }
+    if (!isDataReady) return <AuthLoadingPage />;
 
     switch (activePage) {
       case "onboarding":
@@ -67,9 +57,9 @@ function AuthenticatedApp() {
       case "characters":
         return <CharacterPage />;
       case "quests":
-        return <QuestPage onOpenQuest={handleOpenQuest} onToggleQuest={handleToggleQuest} quests={quests} />;
+        return <QuestPage onOpenQuest={handleOpenQuest} onToggleQuest={toggleQuest} quests={quests} />;
       case "quest":
-        return <QuestDetailPage onToggleQuest={handleToggleQuest} quest={selectedQuest} />;
+        return <QuestDetailPage onToggleQuest={toggleQuest} quest={selectedQuest} />;
       case "report":
         return <WeeklyReportPage />;
       case "profile":
@@ -78,24 +68,12 @@ function AuthenticatedApp() {
         return <SettingsPage onNavigate={setActivePage} />;
       case "home":
       default:
-        return (
-          <HomePage
-            onNavigate={setActivePage}
-            onOpenQuest={handleOpenQuest}
-            onToggleQuest={handleToggleQuest}
-            quests={quests}
-          />
-        );
+        return <HomePage onNavigate={setActivePage} onOpenQuest={handleOpenQuest} onToggleQuest={toggleQuest} quests={quests} />;
     }
   };
 
   return (
-    <AppLayout
-      activePage={activePage}
-      currentLabel={currentLabel}
-      navItems={displayNavItems}
-      onNavigate={setActivePage}
-    >
+    <AppLayout activePage={activePage} currentLabel={currentLabel} navItems={displayNavItems} onNavigate={setActivePage}>
       {dataError ? <p className="form-error">데이터 동기화 오류: {dataError}</p> : null}
       {renderPage()}
     </AppLayout>
@@ -103,16 +81,7 @@ function AuthenticatedApp() {
 }
 
 function App() {
-  const {
-    authError,
-    clearAuthError,
-    continueAsGuest,
-    isAuthSubmitting,
-    isRestoring,
-    login,
-    session,
-    signup,
-  } = useAuth();
+  const { authError, clearAuthError, continueAsGuest, isAuthSubmitting, isRestoring, login, session, signup } = useAuth();
   const [authPage, setAuthPage] = useState("entry");
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -138,9 +107,7 @@ function App() {
     [clearAuthError],
   );
 
-  if (isRestoring) {
-    return <AuthLoadingPage />;
-  }
+  if (isRestoring) return <AuthLoadingPage />;
 
   if (!session) {
     switch (authPage) {
@@ -174,9 +141,7 @@ function App() {
     }
   }
 
-  if (isTransitioning) {
-    return <AuthLoadingPage onComplete={finishAuthTransition} />;
-  }
+  if (isTransitioning) return <AuthLoadingPage onComplete={finishAuthTransition} />;
 
   return (
     <AppDataProvider>

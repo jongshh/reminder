@@ -9,14 +9,14 @@ import Tag from "../components/ui/Tag";
 import { useAppData } from "../data/AppDataProvider";
 import { getQuestStats } from "../utils/questUtils";
 
-function QuestPage({ onOpenQuest, onToggleQuest, quests }) {
+function QuestPage({ onOpenQuest, onToggleQuest, quests = [] }) {
   const { profile, spaceProfile, todayStatus } = useAppData();
   const stats = getQuestStats(quests);
 
   return (
     <div className="page">
       <section className="home-overview">
-        <SectionTitle description={todayStatus.completionTarget} eyebrow="Daily Quest" title="오늘 퀘스트" />
+        <SectionTitle description={todayStatus.completionTarget} eyebrow="오늘 루틴" title="오늘 퀘스트" />
         <div className="today-panel visual-panel">
           <div className="score-ring" style={{ "--value": `${stats.completionRate}%` }}>
             <strong>{stats.completionRate}</strong>
@@ -27,8 +27,12 @@ function QuestPage({ onOpenQuest, onToggleQuest, quests }) {
             <h3>{spaceProfile.todayQuestion}</h3>
             <div className="mini-metrics">
               <span>{todayStatus.primaryFocus}</span>
-              <span>{stats.completed}/{stats.total}</span>
-              <span>체크 {todayStatus.checkinProgress}/{todayStatus.checkinTotal}</span>
+              <span>
+                {stats.completed}/{stats.total}
+              </span>
+              <span>
+                체크 {todayStatus.checkinProgress}/{todayStatus.checkinTotal}
+              </span>
               <span>{stats.remaining} 남음</span>
             </div>
           </div>

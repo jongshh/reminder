@@ -9,11 +9,11 @@ import FailureReasonTags from "./FailureReasonTags";
 import TodayFocusInput from "./TodayFocusInput";
 
 function CheckinForm() {
-  const { checkinOptions, failureReasonOptions, todayStatus } = useAppData();
+  const { checkinOptions, failureReasonOptions, saveCheckin, todayStatus } = useAppData();
   const [mode, setMode] = useState("am");
-  const [energy, setEnergy] = useState("normal");
+  const [energyLevel, setEnergyLevel] = useState("normal");
   const [busyLevel, setBusyLevel] = useState("normal");
-  const [focus, setFocus] = useState(todayStatus.primaryFocus);
+  const [primaryFocus, setPrimaryFocus] = useState(todayStatus.primaryFocus);
   const [completedToday, setCompletedToday] = useState(false);
   const [failureReasons, setFailureReasons] = useState(["시간 부족"]);
   const [submitted, setSubmitted] = useState(false);
@@ -28,6 +28,25 @@ function CheckinForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (mode === "am") {
+      saveCheckin("am", {
+        energyLevel,
+        busyLevel,
+        primaryFocus,
+        completedToday: false,
+        failureReasons: [],
+      });
+    } else {
+      saveCheckin("pm", {
+        energyLevel,
+        busyLevel,
+        primaryFocus,
+        completedToday,
+        failureReasons: completedToday ? [] : failureReasons,
+      });
+    }
+
     setSubmitted(true);
   };
 
@@ -44,26 +63,18 @@ function CheckinForm() {
 
       {mode === "am" ? (
         <>
-          <EnergyCheck onChange={setEnergy} options={checkinOptions.energyLevels} value={energy} />
+          <EnergyCheck onChange={setEnergyLevel} options={checkinOptions.energyLevels} value={energyLevel} />
           <BusyLevelSelect onChange={setBusyLevel} options={checkinOptions.busyLevels} value={busyLevel} />
-          <TodayFocusInput onChange={setFocus} value={focus} />
+          <TodayFocusInput onChange={setPrimaryFocus} value={primaryFocus} />
         </>
       ) : (
         <>
           <label className="check-toggle">
-            <input
-              checked={completedToday}
-              onChange={(event) => setCompletedToday(event.target.checked)}
-              type="checkbox"
-            />
-            <span>핵심 완료</span>
+            <input checked={completedToday} onChange={(event) => setCompletedToday(event.target.checked)} type="checkbox" />
+            <span>오늘 목표를 완료했어요</span>
           </label>
           {!completedToday ? (
-            <FailureReasonTags
-              onToggle={toggleFailureReason}
-              options={failureReasonOptions}
-              selected={failureReasons}
-            />
+            <FailureReasonTags onToggle={toggleFailureReason} options={failureReasonOptions} selected={failureReasons} />
           ) : null}
         </>
       )}
@@ -71,7 +82,7 @@ function CheckinForm() {
       <div className="checkin-form__footer">
         <div>
           <Tag tone="main">{mode === "am" ? "계획" : "회고"}</Tag>
-          <span>AI 조정값</span>
+          <span>룰 기반 조정</span>
         </div>
         <Button type="submit">저장</Button>
       </div>

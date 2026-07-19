@@ -9,7 +9,7 @@ function DifficultySuggestionCard() {
     <Card className="suggestion-card">
       <div className="suggestion-card__header">
         <Tag tone="recovery">{difficultySuggestion.recommendedLevel}</Tag>
-        <span>추천</span>
+        <span>제안</span>
       </div>
       <h3>{difficultySuggestion.title}</h3>
       <p>{difficultySuggestion.message}</p>

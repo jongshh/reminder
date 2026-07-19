@@ -21,7 +21,7 @@ function RoomCanvas({ onSelectCharacter }) {
         </div>
         <div className="room-card__actions">
           <button aria-label="캐릭터 선택" onClick={onSelectCharacter} title="캐릭터 선택" type="button">
-            ☺
+            C
           </button>
           <button aria-label="방 꾸미기" type="button">
             +
@@ -30,17 +30,8 @@ function RoomCanvas({ onSelectCharacter }) {
       </div>
 
       <div className="room-scene room-scene--photo">
-        <img
-          alt=""
-          aria-hidden="true"
-          className="photo-room__reference"
-          src="/room-reference/beige-room-reference.png"
-        />
-
-        <CharacterAvatar
-          character={selectedCharacter}
-          className={`room-character room-character--${spaceProfile.roomMood}`}
-        />
+        <img alt="" aria-hidden="true" className="photo-room__reference" src="/room-reference/beige-room-reference.png" />
+        <CharacterAvatar character={selectedCharacter} className={`room-character room-character--${spaceProfile.roomMood}`} />
       </div>
 
       <div className="room-card__bottom">
@@ -49,7 +40,7 @@ function RoomCanvas({ onSelectCharacter }) {
           <span>개의 오브젝트</span>
         </div>
         <div className="room-currency">
-          <span>✦</span>
+          <span>XP</span>
           <strong>{spaceProfile.currency}</strong>
           <small>{brand.currencyName}</small>
         </div>

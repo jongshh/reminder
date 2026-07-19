@@ -20,7 +20,7 @@ const loadDataForSession = async (session, todayKey) => {
 };
 
 const chooseClass = ({ energyLevel, preference }) => {
-  if (energyLevel === "low") {
+  if (energyLevel === "low" || preference === "recovery") {
     return { className: "Keeper", classLabel: "회복을 지키는 수호자", characterId: "sage-cat" };
   }
 
@@ -33,7 +33,7 @@ const chooseClass = ({ energyLevel, preference }) => {
 
 const createOnboardingQuests = ({ targetGoal, availableMinutes }) => {
   const minutes = Number(availableMinutes) || 25;
-  const mainMinutes = Math.min(30, Math.max(10, minutes));
+  const mainMinutes = Math.min(45, Math.max(10, minutes));
 
   return [
     {
@@ -213,8 +213,14 @@ export function AppDataProvider({ children }) {
   };
 
   const completeOnboarding = (payload) => {
-    const classInfo = chooseClass(payload);
-    const quests = createOnboardingQuests(payload);
+    const classInfo = {
+      ...chooseClass(payload),
+      ...(payload.profilePatch ?? {}),
+    };
+    const quests =
+      Array.isArray(payload.generatedQuests) && payload.generatedQuests.length > 0
+        ? payload.generatedQuests
+        : createOnboardingQuests(payload);
 
     updateAndPersist((currentData) => ({
       ...currentData,

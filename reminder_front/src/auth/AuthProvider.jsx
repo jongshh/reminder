@@ -5,6 +5,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [authError, setAuthError] = useState("");
+  const [authMessage, setAuthMessage] = useState("");
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const [isRestoring, setIsRestoring] = useState(true);
   const [session, setSession] = useState(null);
@@ -52,11 +53,18 @@ export function AuthProvider({ children }) {
   const runAuthAction = useCallback(async (action) => {
     setIsAuthSubmitting(true);
     setAuthError("");
+    setAuthMessage("");
 
     try {
-      const nextSession = await action();
-      setSession(nextSession);
-      return nextSession;
+      const result = await action();
+
+      if (result?.pendingEmailConfirmation) {
+        setAuthMessage(result.message);
+        return result;
+      }
+
+      setSession(result);
+      return result;
     } catch (error) {
       setAuthError(error.message);
       throw error;
@@ -90,11 +98,13 @@ export function AuthProvider({ children }) {
 
   const clearAuthError = useCallback(() => {
     setAuthError("");
+    setAuthMessage("");
   }, []);
 
   const value = useMemo(
     () => ({
       authError,
+      authMessage,
       clearAuthError,
       continueAsGuest,
       deleteAccount,
@@ -107,6 +117,7 @@ export function AuthProvider({ children }) {
     }),
     [
       authError,
+      authMessage,
       clearAuthError,
       continueAsGuest,
       deleteAccount,

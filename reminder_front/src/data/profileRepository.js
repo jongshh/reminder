@@ -215,7 +215,16 @@ export const profileRepository = {
     throwIfSupabaseError(checkinError);
 
     const legacyAppData = await loadLegacyAppData(client, session.userId);
-    const data = mergeWithDefaultData(legacyAppData, { email: session.email, ...profile }, todayKey);
+    const data = mergeWithDefaultData(
+      legacyAppData,
+      {
+        email: session.email,
+        name: session.name,
+        targetGoal: session.targetGoal,
+        ...profile,
+      },
+      todayKey,
+    );
 
     const questsByDate = {};
     (questRows ?? []).forEach((row) => {

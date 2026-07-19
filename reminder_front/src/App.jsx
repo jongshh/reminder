@@ -81,14 +81,24 @@ function AuthenticatedApp() {
 }
 
 function App() {
-  const { authError, clearAuthError, continueAsGuest, isAuthSubmitting, isRestoring, login, session, signup } = useAuth();
+  const {
+    authError,
+    authMessage,
+    clearAuthError,
+    continueAsGuest,
+    isAuthSubmitting,
+    isRestoring,
+    login,
+    session,
+    signup,
+  } = useAuth();
   const [authPage, setAuthPage] = useState("entry");
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const startAuthTransition = useCallback(async (authenticate) => {
     try {
-      await authenticate();
-      setIsTransitioning(true);
+      const result = await authenticate();
+      setIsTransitioning(!result?.pendingEmailConfirmation);
     } catch {
       setIsTransitioning(false);
     }
@@ -125,6 +135,7 @@ function App() {
           <SignupPage
             error={authError}
             isSubmitting={isAuthSubmitting}
+            message={authMessage}
             onBack={() => goToAuthPage("entry")}
             onSubmit={(details) => startAuthTransition(() => signup(details))}
           />

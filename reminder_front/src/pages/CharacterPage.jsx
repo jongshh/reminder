@@ -1,3 +1,4 @@
+import { useState } from "react";
 import CharacterAvatar from "../components/character/CharacterAvatar";
 import SectionTitle from "../components/ui/SectionTitle";
 import Tag from "../components/ui/Tag";
@@ -7,6 +8,7 @@ import { characters, getCharacterById } from "../data/characters";
 function CharacterPage() {
   const { profile, updateProfile } = useAppData();
   const selectedCharacter = getCharacterById(profile.characterId);
+  const [previewMotion, setPreviewMotion] = useState("auto");
 
   return (
     <div className="page character-page">
@@ -21,10 +23,18 @@ function CharacterPage() {
               aria-pressed={isSelected}
               className="character-option"
               key={character.id}
-              onClick={() => updateProfile({ characterId: character.id })}
+              onClick={() => {
+                updateProfile({ characterId: character.id });
+                setPreviewMotion("auto");
+              }}
               type="button"
             >
-              <CharacterAvatar character={character} className="character-option__preview" />
+              <CharacterAvatar
+                animated
+                character={character}
+                className="character-option__preview"
+                motion="bounce"
+              />
               <span className="character-option__copy">
                 <strong>{character.name}</strong>
                 <small>{character.species}</small>
@@ -33,6 +43,42 @@ function CharacterPage() {
             </button>
           );
         })}
+      </section>
+
+      <section className="character-motion-showcase">
+        <div className="character-motion-showcase__copy">
+          <Tag tone="main">모션 프리뷰</Tag>
+          <h2>{selectedCharacter.name}의 움직임</h2>
+          <p>스토리보드에 있는 프레임만 순서대로 연결했어요. 원하는 동작을 눌러 확인해 보세요.</p>
+          <div aria-label="미리 볼 모션 선택" className="character-motion-controls" role="group">
+            <button
+              aria-pressed={previewMotion === "auto"}
+              onClick={() => setPreviewMotion("auto")}
+              type="button"
+            >
+              자동 재생
+            </button>
+            {selectedCharacter.motions.map((motionItem) => (
+              <button
+                aria-pressed={previewMotion === motionItem.id}
+                key={motionItem.id}
+                onClick={() => setPreviewMotion(motionItem.id)}
+                type="button"
+              >
+                {motionItem.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="character-motion-showcase__stage">
+          <CharacterAvatar
+            animated
+            character={selectedCharacter}
+            className="character-motion-showcase__avatar"
+            motion={previewMotion}
+          />
+          <span>원본 스토리보드 모션</span>
+        </div>
       </section>
 
       <section className="character-board">

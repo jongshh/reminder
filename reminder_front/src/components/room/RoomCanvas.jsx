@@ -31,7 +31,11 @@ function RoomCanvas({ onSelectCharacter }) {
 
       <div className="room-scene room-scene--photo">
         <img alt="" aria-hidden="true" className="photo-room__reference" src="/room-reference/beige-room-reference.png" />
-        <CharacterAvatar character={selectedCharacter} className={`room-character room-character--${spaceProfile.roomMood}`} />
+        <CharacterAvatar
+          animated
+          character={selectedCharacter}
+          className={`room-character room-character--${spaceProfile.roomMood}`}
+        />
       </div>
 
       <div className="room-card__bottom">

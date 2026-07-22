@@ -1,3 +1,13 @@
+const motionAssetVersion = "2";
+
+const createMotion = (characterId, id, label) => ({
+  id,
+  label,
+  frames: [1, 2, 3, 2].map(
+    (frame) => `/characters/motions/${characterId}-${id}-${frame}.png?v=${motionAssetVersion}`,
+  ),
+});
+
 export const characters = [
   {
     id: "lavender-cat",
@@ -7,6 +17,11 @@ export const characters = [
     boardSrc: "/characters/lavender-cat-board.png",
     avatarSrc: "/characters/lavender-cat-cutout.png",
     accent: "#e8ddfb",
+    motions: [
+      createMotion("lavender-cat", "bounce", "통통 바운스"),
+      createMotion("lavender-cat", "walk", "사뿐사뿐 걷기"),
+      createMotion("lavender-cat", "tail", "꼬리 흔들기"),
+    ],
   },
   {
     id: "sprout-bird",
@@ -16,6 +31,11 @@ export const characters = [
     boardSrc: "/characters/sprout-bird-board.png",
     avatarSrc: "/characters/sprout-bird-cutout.png",
     accent: "#dff2e3",
+    motions: [
+      createMotion("sprout-bird", "bounce", "폴짝 바운스"),
+      createMotion("sprout-bird", "walk", "종종걸음"),
+      createMotion("sprout-bird", "wave", "손 흔들기"),
+    ],
   },
   {
     id: "cream-bunny",
@@ -25,6 +45,11 @@ export const characters = [
     boardSrc: "/characters/cream-bunny-board.png",
     avatarSrc: "/characters/cream-bunny-cutout.png",
     accent: "#ffe8bf",
+    motions: [
+      createMotion("cream-bunny", "bounce", "통통 바운스"),
+      createMotion("cream-bunny", "walk", "총총 걷기"),
+      createMotion("cream-bunny", "wave", "손 흔들기"),
+    ],
   },
 ];
 

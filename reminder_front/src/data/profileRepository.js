@@ -8,7 +8,6 @@ const LEGACY_GUEST_DATA_KEY = "questlog.data.guest";
 const APP_DATA_SCHEMA_VERSION = 2;
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
-
 const getStorage = () => (typeof window === "undefined" ? null : window.localStorage);
 
 const readJson = (key, fallback) => {
@@ -34,9 +33,7 @@ const removeItem = (key) => {
 };
 
 const throwIfSupabaseError = (error) => {
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 };
 
 const normalizeProfile = (profile = {}) =>
@@ -55,10 +52,11 @@ const normalizeProfile = (profile = {}) =>
     recoveryTokens: profile.recovery_tokens ?? profile.recoveryTokens ?? defaultAppData.profile.recoveryTokens,
     recoveryRate: profile.recovery_rate ?? profile.recoveryRate ?? defaultAppData.profile.recoveryRate,
     lastCompletedDate: profile.last_completed_date ?? profile.lastCompletedDate ?? "",
+    badges: profile.badges ?? defaultAppData.profile.badges,
   });
 
 const normalizeQuest = (quest = {}) => ({
-  id: quest.id,
+  id: quest.id || `quest-${Date.now()}`,
   type: quest.type || "main",
   title: quest.title || "새 퀘스트",
   category: quest.category || "루틴",
@@ -84,15 +82,35 @@ const normalizeCheckin = (checkin = {}) => ({
   failureReasons: checkin.failure_reasons || checkin.failureReasons || [],
 });
 
+const rebuildSpaceProfile = (data) => ({
+  ...data.spaceProfile,
+  ownerName: data.profile.name,
+  currency: data.profile.xp,
+  ddayLabel: `루틴 ${data.profile.streak}일째`,
+});
+
+export const rebuildDerivedData = (data, todayKey = getTodayKey()) => {
+  const checkinsByDate = data.checkinsByDate ?? {};
+  const quests = (data.quests ?? []).map(normalizeQuest);
+  const questsByDate = { ...(data.questsByDate ?? {}), [todayKey]: quests };
+  const todayStatus = createTodayStatus({ checkins: checkinsByDate, quests, todayKey });
+  const coachState = createCoachState({ checkins: checkinsByDate, quests });
+
+  return {
+    ...data,
+    ...coachState,
+    checkinsByDate,
+    quests,
+    questsByDate,
+    spaceProfile: rebuildSpaceProfile({ ...data, quests, questsByDate }),
+    todayStatus,
+    weeklyReport: createWeeklyReport({ checkinsByDate, questsByDate, todayKey }),
+  };
+};
+
 const createInitialData = (profileSeed, todayKey = getTodayKey()) => {
   const data = clone(defaultAppData);
   data.profile = normalizeProfile(profileSeed);
-  data.spaceProfile = {
-    ...data.spaceProfile,
-    ownerName: data.profile.name,
-    currency: data.profile.xp,
-    ddayLabel: `루틴 ${data.profile.streak}일째`,
-  };
   data.quests = data.quests.map(normalizeQuest);
   data.questsByDate = { [todayKey]: data.quests };
   data.checkinsByDate = {};
@@ -116,26 +134,6 @@ const mergeWithDefaultData = (data, profileSeed, todayKey = getTodayKey()) => {
   merged.quests = (merged.questsByDate[todayKey] ?? data.quests ?? initialData.quests).map(normalizeQuest);
   merged.questsByDate[todayKey] = merged.quests;
   return rebuildDerivedData(merged, todayKey);
-};
-
-export const rebuildDerivedData = (data, todayKey = getTodayKey()) => {
-  const checkinsByDate = data.checkinsByDate ?? {};
-  const questsByDate = { ...(data.questsByDate ?? {}), [todayKey]: data.quests ?? [] };
-  const todayStatus = createTodayStatus({
-    checkins: checkinsByDate,
-    quests: questsByDate[todayKey] ?? [],
-    todayKey,
-  });
-  const coachState = createCoachState({ checkins: checkinsByDate, quests: questsByDate[todayKey] ?? [] });
-
-  return {
-    ...data,
-    ...coachState,
-    checkinsByDate,
-    questsByDate,
-    todayStatus,
-    weeklyReport: createWeeklyReport({ checkinsByDate, questsByDate, todayKey }),
-  };
 };
 
 const profileToRow = (userId, profile) => ({
@@ -202,7 +200,6 @@ export const profileRepository = {
   async loadMemberData(session, todayKey = getTodayKey()) {
     const client = requireSupabase();
     const dateKeys = getRecentDateKeys(todayKey, 7);
-
     const [{ data: profile, error: profileError }, { data: questRows, error: questError }, { data: checkinRows, error: checkinError }] =
       await Promise.all([
         client.from("profiles").select("*").eq("id", session.userId).maybeSingle(),
@@ -215,16 +212,7 @@ export const profileRepository = {
     throwIfSupabaseError(checkinError);
 
     const legacyAppData = await loadLegacyAppData(client, session.userId);
-    const data = mergeWithDefaultData(
-      legacyAppData,
-      {
-        email: session.email,
-        name: session.name,
-        targetGoal: session.targetGoal,
-        ...profile,
-      },
-      todayKey,
-    );
+    const data = mergeWithDefaultData(legacyAppData, { email: session.email, name: session.name, targetGoal: session.targetGoal, ...profile }, todayKey);
 
     const questsByDate = {};
     (questRows ?? []).forEach((row) => {
@@ -256,8 +244,7 @@ export const profileRepository = {
     const client = requireSupabase();
     const todayQuests = (data.questsByDate?.[todayKey] ?? data.quests ?? []).map(normalizeQuest);
     const todayCheckins = Object.values(data.checkinsByDate?.[todayKey] ?? {});
-
-    await Promise.all([
+    const results = await Promise.all([
       client.from("profiles").upsert(profileToRow(session.userId, data.profile)),
       todayQuests.length
         ? client.from("quests").upsert(todayQuests.map((quest) => questToRow(session.userId, todayKey, quest)))
@@ -271,7 +258,9 @@ export const profileRepository = {
         schema_version: APP_DATA_SCHEMA_VERSION,
         updated_at: new Date().toISOString(),
       }),
-    ]).then((results) => results.forEach(({ error }) => throwIfSupabaseError(error)));
+    ]);
+
+    results.forEach(({ error }) => throwIfSupabaseError(error));
   },
 
   deleteGuestData() {

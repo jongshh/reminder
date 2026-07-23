@@ -13,12 +13,7 @@ export const normalizeProfileProgress = (profile = {}) => {
     nextLevelXp += LEVEL_STEP;
   }
 
-  return {
-    ...profile,
-    level,
-    xp,
-    nextLevelXp,
-  };
+  return { ...profile, level, xp, nextLevelXp };
 };
 
 export const applyQuestToggleRules = ({ profile, quest, quests, todayKey = getTodayKey() }) => {
@@ -28,11 +23,9 @@ export const applyQuestToggleRules = ({ profile, quest, quests, todayKey = getTo
     completed: !wasCompleted,
     completedAt: wasCompleted ? null : new Date().toISOString(),
   };
-
   const nextQuests = quests.map((currentQuest) => (currentQuest.id === quest.id ? toggledQuest : currentQuest));
   const xpDelta = wasCompleted ? -Number(quest.xp || 0) : Number(quest.xp || 0);
   const allCompleted = nextQuests.length > 0 && nextQuests.every((currentQuest) => currentQuest.completed);
-
   const nextProfile = normalizeProfileProgress({
     ...profile,
     xp: Math.max(0, Number(profile.xp || 0) + xpDelta),
@@ -49,9 +42,7 @@ export const createTodayStatus = ({ checkins = {}, quests = [], todayKey = getTo
   const totalCount = quests.length;
   const am = todayCheckins.am;
   const pm = todayCheckins.pm;
-
-  const condition =
-    am?.energyLevel === "high" ? "좋음" : am?.energyLevel === "low" ? "회복 필요" : "보통";
+  const condition = am?.energyLevel === "high" ? "좋음" : am?.energyLevel === "low" ? "회복 필요" : "보통";
 
   return {
     dateLabel: todayKey,
@@ -118,11 +109,7 @@ export const createWeeklyReport = ({ checkinsByDate = {}, questsByDate = {}, tod
 
     completedCount += dailyCompleted;
     totalCount += dailyTotal;
-
-    if (dailyCompleted > 0 && pm?.completedToday === false) {
-      recoveredDays += 1;
-    }
-
+    if (dailyCompleted > 0 && pm?.completedToday === false) recoveredDays += 1;
     (pm?.failureReasons ?? []).forEach((reason) => {
       failureCounts.set(reason, (failureCounts.get(reason) ?? 0) + 1);
     });

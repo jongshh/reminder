@@ -12,7 +12,6 @@ function ConfirmAction({ confirmLabel, description, onConfirm, title, variant = 
 
   const handleConfirm = async () => {
     setIsWorking(true);
-
     try {
       await onConfirm();
     } finally {
@@ -105,7 +104,7 @@ function SettingsPage({ onNavigate }) {
         <h3>계정 관리</h3>
         {isGuest ? (
           <>
-            <p>게스트 데이터를 초기화하면 이 브라우저에 저장된 앱 데이터가 기본 상태로 돌아갑니다.</p>
+            <p>게스트 데이터를 초기화하면 이 브라우저에 저장된 퀘스트, 프로필, 진행 기록이 기본 상태로 돌아갑니다.</p>
             <div className="settings-actions">
               <Button onClick={logout} variant="secondary">
                 세션 종료
@@ -122,8 +121,6 @@ function SettingsPage({ onNavigate }) {
         ) : (
           <>
             <p>
-              로그아웃은 현재 세션만 종료합니다. 계정 데이터 삭제는 Supabase의 프로필과 앱 데이터 row를 지운 뒤
-              로그아웃합니다. Supabase Auth 사용자 자체 삭제는 이후 서버나 Edge Function으로 추가해야 합니다.
             </p>
             <div className="settings-actions">
               <Button onClick={logout} variant="secondary">
@@ -131,7 +128,7 @@ function SettingsPage({ onNavigate }) {
               </Button>
               <ConfirmAction
                 confirmLabel="데이터 삭제"
-                description="Supabase 프로필과 앱 데이터 row를 삭제한 뒤 로그아웃합니다."
+                description="Supabase 프로필과 앱 데이터 row를 삭제하고 로그아웃합니다."
                 onConfirm={handleDeleteAccount}
                 title="계정 데이터 삭제"
                 variant="danger"

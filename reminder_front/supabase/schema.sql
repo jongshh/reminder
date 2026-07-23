@@ -21,7 +21,7 @@ alter table public.profiles add column if not exists last_completed_date date;
 create table if not exists public.app_data (
   user_id uuid primary key references auth.users on delete cascade,
   data jsonb not null,
-  schema_version int not null default 1,
+  schema_version int not null default 2,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

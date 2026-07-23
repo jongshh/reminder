@@ -30,13 +30,7 @@ function CheckinForm() {
     event.preventDefault();
 
     if (mode === "am") {
-      saveCheckin("am", {
-        energyLevel,
-        busyLevel,
-        primaryFocus,
-        completedToday: false,
-        failureReasons: [],
-      });
+      saveCheckin("am", { energyLevel, busyLevel, primaryFocus, completedToday: false, failureReasons: [] });
     } else {
       saveCheckin("pm", {
         energyLevel,

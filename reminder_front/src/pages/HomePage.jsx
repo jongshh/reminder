@@ -3,7 +3,7 @@ import ProgressBar from "../components/ui/ProgressBar";
 import { useAppData } from "../data/AppDataProvider";
 import { getQuestStats } from "../utils/questUtils";
 
-function HomePage({ onNavigate, quests }) {
+function HomePage({ onNavigate, quests = [] }) {
   const { profile, todayStatus } = useAppData();
   const stats = getQuestStats(quests);
 
@@ -14,7 +14,9 @@ function HomePage({ onNavigate, quests }) {
       <section className="home-status-strip" aria-label="오늘 요약">
         <div>
           <span>오늘 진행</span>
-          <strong>{stats.completed}/{stats.total}</strong>
+          <strong>
+            {stats.completed}/{stats.total}
+          </strong>
         </div>
         <div>
           <span>남은 루틴</span>

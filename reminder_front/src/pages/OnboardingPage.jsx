@@ -70,35 +70,26 @@ function OnboardingPage({ onNavigate }) {
 
   const activeExample = goalExamples[exampleIndex];
   const normalizedGoal = targetGoal.trim();
-  const availableMinutes = timeMode === "custom" ? Number(customMinutes) || 10 : timeMode;
+  const availableMinutes = timeMode === "custom" ? Math.max(5, Number(customMinutes) || 5) : timeMode;
   const submitLabel = isGenerating ? "퀘스트 만드는 중..." : "오늘 퀘스트 만들기";
 
   const selectedSummary = useMemo(() => {
-    const time = `${availableMinutes}분`;
     const energy = energyOptions.find((option) => option.value === energyLevel)?.label;
     const style = preferenceOptions.find((option) => option.value === preference)?.label;
-    return `${time} · 컨디션 ${energy} · ${style}`;
+    return `${availableMinutes}분 · 컨디션 ${energy} · ${style}`;
   }, [availableMinutes, energyLevel, preference]);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
+    if (typeof window === "undefined") return undefined;
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
-
     updatePreference();
     mediaQuery.addEventListener("change", updatePreference);
-
     return () => mediaQuery.removeEventListener("change", updatePreference);
   }, []);
 
   useEffect(() => {
-    if (targetGoal) {
-      return undefined;
-    }
-
+    if (targetGoal) return undefined;
     if (prefersReducedMotion) {
       setTypedExample(activeExample);
       return undefined;
@@ -109,8 +100,7 @@ function OnboardingPage({ onNavigate }) {
     let timeoutId;
 
     const tick = () => {
-      const nextText = activeExample.slice(0, letterIndex);
-      setTypedExample(nextText);
+      setTypedExample(activeExample.slice(0, letterIndex));
 
       if (!isDeleting && letterIndex < activeExample.length) {
         letterIndex += 1;
@@ -134,28 +124,20 @@ function OnboardingPage({ onNavigate }) {
     };
 
     timeoutId = window.setTimeout(tick, 80);
-
     return () => window.clearTimeout(timeoutId);
   }, [activeExample, prefersReducedMotion, targetGoal]);
 
   useEffect(() => {
-    if (!isQuestDialogOpen) {
-      return undefined;
-    }
-
+    if (!isQuestDialogOpen) return undefined;
     const handleKeyDown = (event) => {
-      if (event.key === "Escape" && !isGenerating) {
-        setIsQuestDialogOpen(false);
-      }
+      if (event.key === "Escape" && !isGenerating) setIsQuestDialogOpen(false);
     };
-
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isGenerating, isQuestDialogOpen]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const payload = {
       targetGoal: normalizedGoal || activeExample,
       availableMinutes,
@@ -165,16 +147,11 @@ function OnboardingPage({ onNavigate }) {
 
     setIsGenerating(true);
     setStatusMessage("AI 생성 커넥터를 확인하고 있어요.");
-
     const generated = await generateOnboardingQuests(payload);
 
     completeOnboarding(
       generated
-        ? {
-            ...payload,
-            generatedQuests: generated.quests,
-            profilePatch: generated.profilePatch,
-          }
+        ? { ...payload, generatedQuests: generated.quests, profilePatch: generated.profilePatch }
         : payload,
     );
 
@@ -222,11 +199,11 @@ function OnboardingPage({ onNavigate }) {
           />
           <Card
             aria-labelledby="quest-dialog-title"
+            aria-modal="true"
             as="form"
             className="onboarding-builder quest-dialog__panel"
             onSubmit={handleSubmit}
             role="dialog"
-            aria-modal="true"
           >
             <div className="onboarding-builder__header">
               <div>
@@ -254,12 +231,7 @@ function OnboardingPage({ onNavigate }) {
               <label className="form-field onboarding-custom-time">
                 <span>직접 입력</span>
                 <div>
-                  <input
-                    min="5"
-                    onChange={(event) => setCustomMinutes(event.target.value)}
-                    type="number"
-                    value={customMinutes}
-                  />
+                  <input min="5" onChange={(event) => setCustomMinutes(event.target.value)} type="number" value={customMinutes} />
                   <span>분</span>
                 </div>
               </label>

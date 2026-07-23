@@ -31,27 +31,29 @@ const chooseClass = ({ energyLevel, preference }) => {
   return { className: "Scholar", classLabel: "차분한 학습가", characterId: "cream-bunny" };
 };
 
+const clampMinutes = (value) => Math.max(5, Number(value) || 25);
+
 const createOnboardingQuests = ({ targetGoal, availableMinutes }) => {
-  const minutes = Number(availableMinutes) || 25;
-  const mainMinutes = Math.min(45, Math.max(10, minutes));
+  const minutes = clampMinutes(availableMinutes);
+  const timeLabel = `${minutes}분`;
 
   return [
     {
       id: "main-focus",
       type: "main",
-      title: `${targetGoal || "목표"} ${mainMinutes}분`,
+      title: `${targetGoal || "목표"} ${timeLabel}`,
       category: "핵심",
-      time: "오늘",
-      scheduledTime: "오늘",
-      difficulty: minutes < 20 ? "쉬움" : "보통",
-      xp: minutes < 20 ? 25 : 45,
+      time: timeLabel,
+      scheduledTime: timeLabel,
+      difficulty: minutes < 20 ? "쉬움" : minutes > 45 ? "도전" : "보통",
+      xp: minutes < 20 ? 25 : minutes > 45 ? 60 : 45,
       completed: false,
       completedAt: null,
-      visual: String(mainMinutes),
+      visual: String(minutes),
       color: "teal",
-      description: "오늘 가장 중요한 루틴을 작게 실행합니다.",
+      description: "오늘 가장 중요한 루틴을 입력한 시간만큼 실행합니다.",
       recoveryAction: "5분만 다시 시작하기",
-      steps: ["시작 준비", `${mainMinutes}분 실행`, "완료 기록"],
+      steps: ["시작 준비", `${timeLabel} 실행`, "완료 기록"],
     },
     {
       id: "mini-restart",
@@ -128,7 +130,6 @@ export function AppDataProvider({ children }) {
 
   useEffect(() => {
     if (!session || !isDataReady) return undefined;
-
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
 
     saveTimerRef.current = setTimeout(async () => {
@@ -203,10 +204,7 @@ export function AppDataProvider({ children }) {
         ...(currentData.checkinsByDate ?? {}),
         [todayKey]: {
           ...(currentData.checkinsByDate?.[todayKey] ?? {}),
-          [period]: {
-            period,
-            ...payload,
-          },
+          [period]: { period, ...payload },
         },
       },
     }));
@@ -244,10 +242,7 @@ export function AppDataProvider({ children }) {
   const updateProfile = (updates) => {
     updateAndPersist((currentData) => ({
       ...currentData,
-      profile: {
-        ...currentData.profile,
-        ...updates,
-      },
+      profile: { ...currentData.profile, ...updates },
     }));
   };
 
